@@ -38,7 +38,7 @@ Each release also publishes `icedrive-music-extension-<version>-chrome.crx`
 and `update.xml` for company-managed browsers (see
 [docs/enterprise-install.md](../docs/enterprise-install.md)). They are signed
 with a private key stored as the `CRX_PRIVATE_KEY` repository secret. Without
-the secret, the release still works but skips the `.crx` with a warning.
+the secret the Release workflow fails before it creates a tag or a release.
 
 1. Create the key on your own computer (either command):
 
