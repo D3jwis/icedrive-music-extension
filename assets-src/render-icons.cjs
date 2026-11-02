@@ -1,6 +1,6 @@
 // Renders public/icon/*.png from the SVG sources using the preinstalled Playwright Chromium.
 // Usage: node assets-src/render-icons.cjs assets-src/icon.svg assets-src/icon-small.svg public/icon [preview.png]
-// 16 and 32 px use icon-small.svg, larger sizes use icon.svg (both can be the same file).
+// 16 and 32 px use icon-small.svg (simplified for the toolbar), larger sizes use icon.svg.
 const { chromium } = require('playwright');
 const fs = require('fs'); const path = require('path');
 (async () => {
