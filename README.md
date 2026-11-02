@@ -9,7 +9,7 @@ Zbudowane na [WXT](https://wxt.dev) + TypeScript, Manifest V3.
 ## Status
 
 - [x] **Krok 1:** szkielet, odczyt stanu odtwarzacza Icedrive, sterowanie (play/pauza, przewijanie, następny/poprzedni), automatyczne przejście do kolejnego utworu po zakończeniu
-- [ ] **Krok 2:** pełny popup z okładką, paskiem przewijania i listą utworów
+- [x] **Krok 2:** pełny popup z okładką, paskiem przewijania i listą utworów
 - [ ] **Krok 3:** shuffle i loop (utwór / cały folder), zapamiętywanie ustawień
 - [ ] **Krok 4:** klawisze multimedialne (Media Session API), skróty klawiszowe
 
@@ -36,7 +36,7 @@ Icedrive odtwarza muzykę w oknie podglądu (`#preview`) przy użyciu Plyr. Wtyc
 - `lib/icedrive-dom.ts` zna strukturę strony Icedrive (jedyne miejsce do poprawy, jeśli Icedrive zmieni HTML),
 - `entrypoints/icedrive.content.ts` czyta stan odtwarzacza i wykonuje polecenia z popupu,
 - `entrypoints/icedrive-bridge.content.ts` działa w kontekście strony i wywołuje funkcję Icedrive `previewItem()`, żeby otworzyć inny plik z folderu,
-- `entrypoints/popup/` to okienko pod ikoną wtyczki.
+- `entrypoints/popup/` to okienko pod ikoną wtyczki: okładka, tytuł, wykonawca, pasek przewijania, sterowanie i lista utworów (kliknięcie odtwarza; spacja = play/pauza).
 
 ## Skrypty
 

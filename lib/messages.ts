@@ -21,7 +21,15 @@ export type PlayerCommand =
   | { type: 'seek'; time: number }
   | { type: 'next' }
   | { type: 'previous' }
-  | { type: 'playTrack'; id: string };
+  | { type: 'playTrack'; id: string }
+  /** Album art as a data: URL (the page's blob: URL can't be shown in the popup). */
+  | { type: 'getArt' };
+
+export interface ArtResponse {
+  /** The page URL this art came from, so the popup can tell when it changes. */
+  sourceUrl: string | null;
+  dataUrl: string | null;
+}
 
 /**
  * Event used between the isolated content script and the MAIN-world bridge,

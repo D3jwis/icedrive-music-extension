@@ -96,6 +96,7 @@ export class PlayerController {
         this.playTrack(cmd.id);
         break;
       case 'getState':
+      case 'getArt':
         break;
     }
     return this.getState();

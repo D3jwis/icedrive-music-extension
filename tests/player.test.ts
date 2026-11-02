@@ -103,3 +103,13 @@ describe('PlayerController', () => {
     expect(opened).toEqual([{ id: 'file-104', area: 'crypto' }]);
   });
 });
+
+describe('formatTime', () => {
+  it('formats minutes and hours', async () => {
+    const { formatTime } = await import('../lib/format');
+    expect(formatTime(0)).toBe('0:00');
+    expect(formatTime(75.9)).toBe('1:15');
+    expect(formatTime(3725)).toBe('1:02:05');
+    expect(formatTime(Number.NaN)).toBe('0:00');
+  });
+});

@@ -6,19 +6,46 @@
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
-    <!-- Step 1: a simple diagnostic view. The full player UI comes in step 2. -->
     <main id="app">
-      <p id="status">Szukam karty Icedrive…</p>
-      <section id="player" hidden>
-        <div id="title"></div>
-        <div id="artist"></div>
-        <div id="time"></div>
-        <div id="controls">
-          <button id="prev" title="Poprzedni">⏮</button>
-          <button id="play" title="Odtwórz / pauza">⏯</button>
-          <button id="next" title="Następny">⏭</button>
+      <section id="empty" class="empty" hidden>
+        <svg class="empty-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z" /></svg>
+        <p id="empty-text"></p>
+      </section>
+
+      <section id="now" class="now" hidden>
+        <div id="art" class="art" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z" /></svg>
         </div>
-        <div id="queue"></div>
+        <div class="meta">
+          <div id="title" class="title"></div>
+          <div id="artist" class="artist"></div>
+          <div id="position" class="position"></div>
+        </div>
+      </section>
+
+      <section id="transport" class="transport" hidden>
+        <input id="seek" type="range" min="0" max="0" step="0.1" value="0" aria-label="Przewiń" />
+        <div class="times"><span id="current">0:00</span><span id="duration">0:00</span></div>
+        <div class="controls">
+          <button id="prev" class="btn" title="Poprzedni (po 3 s: od początku)" aria-label="Poprzedni">
+            <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z" /></svg>
+          </button>
+          <button id="play" class="btn btn-main" title="Odtwórz / pauza" aria-label="Odtwórz">
+            <svg id="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+            <svg id="icon-pause" viewBox="0 0 24 24" hidden><path d="M6 19h4V5H6zm8-14v14h4V5z" /></svg>
+          </button>
+          <button id="next" class="btn" title="Następny" aria-label="Następny">
+            <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6zM16 6v12h2V6z" /></svg>
+          </button>
+        </div>
+      </section>
+
+      <section id="queue-wrap" class="queue-wrap" hidden>
+        <div class="queue-head">
+          <span>Utwory w folderze</span>
+          <span id="queue-count" class="muted"></span>
+        </div>
+        <ol id="queue" class="queue"></ol>
       </section>
     </main>
     <script type="module" src="./main.ts"></script>
