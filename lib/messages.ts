@@ -1,4 +1,5 @@
 import type { NowPlaying, TrackRef } from './icedrive-dom';
+import type { PlaybackSettings } from './queue';
 
 /** Snapshot of the player, sent from the content script to the popup. */
 export interface PlayerState {
@@ -12,6 +13,9 @@ export interface PlayerState {
   tracks: TrackRef[];
   /** Index into `tracks` of the playing file, or -1. */
   currentIndex: number;
+  settings: PlaybackSettings;
+  /** Whether "next" has somewhere to go with the current shuffle/repeat settings. */
+  hasNext: boolean;
 }
 
 /** Messages the popup sends to the content script via browser.tabs.sendMessage. */
@@ -22,6 +26,9 @@ export type PlayerCommand =
   | { type: 'next' }
   | { type: 'previous' }
   | { type: 'playTrack'; id: string }
+  | { type: 'toggleShuffle' }
+  /** off -> all -> one -> off */
+  | { type: 'cycleRepeat' }
   /** Album art as a data: URL (the page's blob: URL can't be shown in the popup). */
   | { type: 'getArt' };
 

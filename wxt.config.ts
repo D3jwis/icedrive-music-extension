@@ -7,5 +7,6 @@ export default defineConfig({
     description:
       'Rozszerza odtwarzacz muzyki w Icedrive: informacje o utworze, przewijanie, następny/poprzedni, shuffle i loop.',
     host_permissions: ['https://icedrive.net/*'],
+    permissions: ['storage'],
   },
 });

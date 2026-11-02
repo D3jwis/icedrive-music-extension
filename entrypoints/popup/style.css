@@ -171,7 +171,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 18px;
+  gap: 12px;
   margin-top: 6px;
 }
 .btn {
@@ -276,4 +276,42 @@ body {
   opacity: 0.35;
   cursor: default;
   background: transparent;
+}
+
+/* Shuffle / repeat toggles */
+.btn-toggle {
+  position: relative;
+  color: var(--muted);
+}
+.btn-toggle svg {
+  width: 19px;
+  height: 19px;
+}
+.btn-toggle[aria-pressed='true'] {
+  color: var(--accent);
+}
+.btn-toggle[aria-pressed='true']::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.badge {
+  position: absolute;
+  top: 5px;
+  right: 4px;
+  min-width: 12px;
+  height: 12px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 12px;
+  text-align: center;
 }
