@@ -29,6 +29,11 @@ npm run build
 
 Podczas pracy nad kodem `npm run dev` uruchamia przeglądarkę z wtyczką i przeładowuje ją przy każdej zmianie.
 
+## Przyciski w odtwarzaczu Icedrive i okno odpięte
+
+- Pod odtwarzaczem Icedrive pojawiają się przyciski **losowo**, **poprzedni**, **następny** i **powtarzanie**. Play, przewijanie i głośność zostają w samym odtwarzaczu Icedrive. Ustawienia są wspólne z popupem.
+- Przycisk ↗ w rogu popupu otwiera go jako **małe osobne okno**, które zostaje otwarte, gdy klikasz gdzie indziej. W tym oknie lista utworów wykorzystuje całą wysokość. Ponowne kliknięcie przenosi do już otwartego okna zamiast tworzyć nowe.
+
 ## Klawisze multimedialne i skróty
 
 Klawisze multimedialne na klawiaturze i słuchawkach (play/pauza, następny, poprzedni) działają, gdy gra muzyka z Icedrive. Tytuł, wykonawca i okładka pojawiają się też w panelu multimediów Chrome/Brave oraz w nakładce systemowej Windows/macOS, gdzie również można przewijać.
@@ -52,6 +57,7 @@ Icedrive odtwarza muzykę w oknie podglądu (`#preview`) przy użyciu Plyr. Wtyc
 - `entrypoints/icedrive.content.ts` czyta stan odtwarzacza i wykonuje polecenia z popupu,
 - `lib/queue.ts` ustala kolejność odtwarzania: po kolei albo losowo (każdy utwór raz, „poprzedni” wraca do faktycznie słuchanego), z powtarzaniem wyłączonym, całego folderu albo jednego utworu. Ustawienia są zapisywane w `storage.local`,
 - `lib/media-session.ts` łączy odtwarzacz z Media Session API (klawisze multimedialne, panel multimediów, nakładka systemowa),
+- `lib/in-page-controls.ts` dokleja przyciski pod odtwarzacz Icedrive (w shadow DOM, więc style się nie mieszają) i dodaje je ponownie, gdy Icedrive przebuduje odtwarzacz dla nowego utworu,
 - `entrypoints/background.ts` obsługuje skróty klawiszowe i przekazuje je do karty Icedrive, która gra,
 - `entrypoints/icedrive-bridge.content.ts` działa w kontekście strony i wywołuje funkcję Icedrive `previewItem()`, żeby otworzyć inny plik z folderu,
 - `entrypoints/popup/` to okienko pod ikoną wtyczki: okładka, tytuł, wykonawca, pasek przewijania, sterowanie i lista utworów (kliknięcie odtwarza; spacja = play/pauza).
