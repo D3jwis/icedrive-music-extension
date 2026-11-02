@@ -37,16 +37,28 @@ Management) and in Brave, which reads the same policies.
 
 ## Option 2: self-hosted, force-installed by IT
 
-For companies that don't want the Web Store. IT hosts the signed `.crx` and an
-update manifest on an internal server and force-installs it with
-`ExtensionInstallForcelist` pointing to that update URL.
+For companies that don't want the Web Store. Every GitHub release includes a
+signed `icedrive-music-extension-<version>-chrome.crx` and a matching
+`update.xml`. The release notes give the fixed extension ID. IT hosts both
+files on an internal server (editing `codebase` in `update.xml` to the
+`.crx` location) and force-installs the extension with
+`ExtensionInstallForcelist`:
+
+```text
+<extension-id>;https://intranet.example.com/icedrive-music/update.xml
+```
+
+If devices can download from this GitHub repository, the policy can instead
+point at `https://github.com/D3jwis/icedrive-music-extension/releases/latest/download/update.xml`.
+This only works without signing in if the repository is public.
 
 - Chrome only installs off-store extensions this way on **managed** devices
   (domain-joined, MDM-enrolled or cloud-managed).
 - The `.crx` must always be signed with the **same private key**, otherwise the
   extension ID changes. Keep that key out of the repository.
-- IT should build it from a tagged release and compare the ZIP's SHA-256 with
-  the checksum published on the GitHub release.
+- IT should compare the SHA-256 of the `.crx` and `update.xml` with
+  `SHA256SUMS.txt` on the release, and can check the signature and ID with
+  `node scripts/crx.mjs verify <file>.crx` or `gh attestation verify`.
 
 ## Option 3 (not recommended on work laptops): Load unpacked
 
