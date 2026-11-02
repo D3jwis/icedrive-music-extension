@@ -1,0 +1,31 @@
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, sans-serif;
+}
+body {
+  margin: 0;
+  width: 300px;
+  padding: 12px;
+}
+#title {
+  font-weight: 600;
+}
+#artist,
+#time,
+#queue,
+#status {
+  opacity: 0.75;
+  font-size: 13px;
+  margin-top: 4px;
+}
+#controls {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0;
+}
+#controls button {
+  flex: 1;
+  font-size: 18px;
+  padding: 6px;
+  cursor: pointer;
+}

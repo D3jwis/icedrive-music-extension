@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Icedrive Music Player+</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <!-- Step 1: a simple diagnostic view. The full player UI comes in step 2. -->
+    <main id="app">
+      <p id="status">Szukam karty Icedrive…</p>
+      <section id="player" hidden>
+        <div id="title"></div>
+        <div id="artist"></div>
+        <div id="time"></div>
+        <div id="controls">
+          <button id="prev" title="Poprzedni">⏮</button>
+          <button id="play" title="Odtwórz / pauza">⏯</button>
+          <button id="next" title="Następny">⏭</button>
+        </div>
+        <div id="queue"></div>
+      </section>
+    </main>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
