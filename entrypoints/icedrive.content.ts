@@ -1,4 +1,5 @@
 import { artToDataUrl } from '@/lib/album-art';
+import { connectMediaSession } from '@/lib/media-session';
 import { PlayerController } from '@/lib/player-controller';
 import type { ArtResponse, PlayerCommand } from '@/lib/messages';
 import type { PlaybackSettings } from '@/lib/queue';
@@ -10,6 +11,7 @@ export default defineContentScript({
   async main() {
     const player = new PlayerController();
     player.enableAutoAdvance();
+    connectMediaSession(player);
 
     // Shuffle/repeat survive reloads and are shared by all Icedrive tabs.
     const saved = await browser.storage.local.get(SETTINGS_KEY);
