@@ -155,7 +155,20 @@ function render(state: PlayerState | null) {
   $('icon-play').toggleAttribute('hidden', !state.paused);
   $('icon-pause').toggleAttribute('hidden', state.paused);
   $('play').setAttribute('aria-label', state.paused ? 'Odtwórz' : 'Pauza');
-  $<HTMLButtonElement>('next').disabled = state.currentIndex < 0 || state.currentIndex >= state.tracks.length - 1;
+  $<HTMLButtonElement>('next').disabled = !state.hasNext;
+  renderModes(state);
+}
+
+const REPEAT_LABELS = { off: 'wyłączone', all: 'cały folder', one: 'jeden utwór' } as const;
+
+function renderModes({ settings }: PlayerState) {
+  const shuffle = $('shuffle');
+  shuffle.setAttribute('aria-pressed', String(settings.shuffle));
+  shuffle.title = `Losowo: ${settings.shuffle ? 'włączone' : 'wyłączone'}`;
+  const repeat = $('repeat');
+  repeat.setAttribute('aria-pressed', String(settings.repeat !== 'off'));
+  repeat.title = `Powtarzanie: ${REPEAT_LABELS[settings.repeat]}`;
+  $('repeat-one').hidden = settings.repeat !== 'one';
 }
 
 // ---- Wiring ----
@@ -165,6 +178,8 @@ const run = async (cmd: PlayerCommand = { type: 'getState' }) => render(await se
 $('prev').addEventListener('click', () => run({ type: 'previous' }));
 $('play').addEventListener('click', () => run({ type: 'togglePlay' }));
 $('next').addEventListener('click', () => run({ type: 'next' }));
+$('shuffle').addEventListener('click', () => run({ type: 'toggleShuffle' }));
+$('repeat').addEventListener('click', () => run({ type: 'cycleRepeat' }));
 
 seek.addEventListener('input', () => {
   dragging = true;

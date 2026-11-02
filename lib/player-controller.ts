@@ -7,6 +7,7 @@ import {
   type TrackRef,
 } from './icedrive-dom';
 import { BRIDGE_EVENT, type BridgeOpenFile, type PlayerCommand, type PlayerState } from './messages';
+import { DEFAULT_SETTINGS, nextRepeatMode, PlayQueue, type PlaybackSettings } from './queue';
 
 /** Going "previous" after this many seconds restarts the song instead. */
 const RESTART_THRESHOLD_S = 3;
@@ -17,12 +18,34 @@ const RESTART_THRESHOLD_S = 3;
  * because only page scripts can call Icedrive's previewItem().
  */
 export class PlayerController {
-  constructor(private readonly doc: Document = document) {}
+  private settings: PlaybackSettings = { ...DEFAULT_SETTINGS };
+  private readonly queue: PlayQueue;
+  /** Called after the user changes shuffle/repeat, so the caller can save them. */
+  onSettingsChange?: (settings: PlaybackSettings) => void;
+
+  constructor(
+    private readonly doc: Document = document,
+    random: () => number = Math.random,
+  ) {
+    this.queue = new PlayQueue(random);
+  }
+
+  getSettings(): PlaybackSettings {
+    return { ...this.settings };
+  }
+
+  /** Applies saved settings (does not call onSettingsChange). */
+  setSettings(settings: Partial<PlaybackSettings>): void {
+    this.settings = { ...this.settings, ...settings };
+  }
 
   getState(): PlayerState {
     const audio = findAudio(this.doc);
     const tracks = listTracks(this.doc);
     const active = audio !== null && isPreviewOpen(this.doc);
+    const currentIndex = active ? findCurrentIndex(tracks, this.doc) : -1;
+    const currentId = tracks[currentIndex]?.id ?? null;
+    this.queue.sync(tracks.map((t) => t.id), currentId, this.settings.shuffle);
     return {
       active,
       nowPlaying: active ? readNowPlaying(this.doc) : null,
@@ -30,7 +53,9 @@ export class PlayerController {
       currentTime: audio?.currentTime ?? 0,
       duration: Number.isFinite(audio?.duration) ? audio!.duration : 0,
       tracks,
-      currentIndex: active ? findCurrentIndex(tracks, this.doc) : -1,
+      currentIndex,
+      settings: this.getSettings(),
+      hasNext: active && this.queue.hasNext(currentId, this.settings),
     };
   }
 
@@ -48,29 +73,37 @@ export class PlayerController {
     audio.currentTime = Number.isFinite(audio.duration) ? Math.min(clamped, audio.duration) : clamped;
   }
 
-  /** Index of the track after the current one, or -1 at the end of the folder. */
-  nextIndex(): number {
-    const { tracks, currentIndex } = this.getState();
-    if (currentIndex < 0 || currentIndex + 1 >= tracks.length) return -1;
-    return currentIndex + 1;
-  }
-
+  /** Opens the next song in play order. Returns false when there is none. */
   next(): boolean {
-    const track = this.getState().tracks[this.nextIndex()];
+    const { tracks, currentIndex } = this.getState();
+    const nextId = this.queue.next(tracks[currentIndex]?.id ?? null, this.settings);
+    const track = tracks.find((t) => t.id === nextId);
     if (!track) return false;
     this.open(track);
     return true;
   }
 
+  /** Restarts the song if it's past 3 s (or there's nothing before it), else opens the previous one. */
   previous(): void {
     const audio = findAudio(this.doc);
     const { tracks, currentIndex } = this.getState();
-    if (audio && (audio.currentTime > RESTART_THRESHOLD_S || currentIndex <= 0)) {
+    const prevId = this.queue.previous(tracks[currentIndex]?.id ?? null, this.settings);
+    const prev = tracks.find((t) => t.id === prevId);
+    if (audio && (audio.currentTime > RESTART_THRESHOLD_S || !prev)) {
       audio.currentTime = 0;
       return;
     }
-    const prev = tracks[currentIndex - 1];
     if (prev) this.open(prev);
+  }
+
+  toggleShuffle(): void {
+    this.settings.shuffle = !this.settings.shuffle;
+    this.onSettingsChange?.(this.getSettings());
+  }
+
+  cycleRepeat(): void {
+    this.settings.repeat = nextRepeatMode(this.settings.repeat);
+    this.onSettingsChange?.(this.getSettings());
   }
 
   playTrack(id: string): void {
@@ -95,6 +128,12 @@ export class PlayerController {
       case 'playTrack':
         this.playTrack(cmd.id);
         break;
+      case 'toggleShuffle':
+        this.toggleShuffle();
+        break;
+      case 'cycleRepeat':
+        this.cycleRepeat();
+        break;
       case 'getState':
       case 'getArt':
         break;
@@ -102,12 +141,22 @@ export class PlayerController {
     return this.getState();
   }
 
-  /** Plays the next file when a song finishes (Icedrive just stops). */
+  /**
+   * When a song finishes (Icedrive just stops): replay it in repeat-one mode,
+   * otherwise play the next one in play order.
+   */
   enableAutoAdvance(): () => void {
     // Media events don't bubble, but a capturing listener on the document
     // still sees them, and it survives Icedrive replacing the <audio> element.
     const onEnded = (e: Event) => {
-      if (e.target instanceof HTMLMediaElement && e.target === findAudio(this.doc)) this.next();
+      const audio = findAudio(this.doc);
+      if (!(e.target instanceof HTMLMediaElement) || e.target !== audio) return;
+      if (this.settings.repeat === 'one') {
+        audio.currentTime = 0;
+        void audio.play();
+      } else {
+        this.next();
+      }
     };
     this.doc.addEventListener('ended', onEnded, true);
     return () => this.doc.removeEventListener('ended', onEnded, true);
