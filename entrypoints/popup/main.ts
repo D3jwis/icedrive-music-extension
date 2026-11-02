@@ -171,6 +171,24 @@ function renderModes({ settings }: PlayerState) {
   $('repeat-one').hidden = settings.repeat !== 'one';
 }
 
+// ---- Detached window ----
+
+const DETACHED = new URLSearchParams(location.search).has('detached');
+const DETACHED_URL = browser.runtime.getURL('/popup.html?detached=1');
+if (DETACHED) document.body.classList.add('detached');
+
+/** Opens the player in a small separate window, or focuses the one already open. */
+async function detach() {
+  const contexts = await browser.runtime.getContexts({ contextTypes: ['TAB'], documentUrls: [DETACHED_URL] });
+  const existing = contexts.find((c) => c.windowId !== -1);
+  if (existing) {
+    await browser.windows.update(existing.windowId, { focused: true });
+  } else {
+    await browser.windows.create({ url: DETACHED_URL, type: 'popup', width: 360, height: 640, focused: true });
+  }
+  window.close();
+}
+
 // ---- Wiring ----
 
 const run = async (cmd: PlayerCommand = { type: 'getState' }) => render(await send(cmd));
@@ -178,6 +196,7 @@ const run = async (cmd: PlayerCommand = { type: 'getState' }) => render(await se
 $('prev').addEventListener('click', () => run({ type: 'previous' }));
 $('play').addEventListener('click', () => run({ type: 'togglePlay' }));
 $('next').addEventListener('click', () => run({ type: 'next' }));
+$('detach').addEventListener('click', () => void detach());
 $('shuffle').addEventListener('click', () => run({ type: 'toggleShuffle' }));
 $('repeat').addEventListener('click', () => run({ type: 'cycleRepeat' }));
 

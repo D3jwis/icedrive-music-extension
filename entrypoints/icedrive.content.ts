@@ -1,5 +1,6 @@
 import { artToDataUrl } from '@/lib/album-art';
 import { connectMediaSession } from '@/lib/media-session';
+import { mountInPageControls } from '@/lib/in-page-controls';
 import { PlayerController } from '@/lib/player-controller';
 import type { ArtResponse, PlayerCommand } from '@/lib/messages';
 import type { PlaybackSettings } from '@/lib/queue';
@@ -21,6 +22,8 @@ export default defineContentScript({
       const change = changes[SETTINGS_KEY];
       if (area === 'local' && change?.newValue) player.setSettings(change.newValue as PlaybackSettings);
     });
+
+    mountInPageControls(player);
 
     browser.runtime.onMessage.addListener((message: PlayerCommand, _sender, sendResponse) => {
       if (message.type === 'getArt') {
