@@ -66,6 +66,13 @@ export class PlayerController {
     else audio.pause();
   }
 
+  setPaused(paused: boolean): void {
+    const audio = findAudio(this.doc);
+    if (!audio) return;
+    if (paused) audio.pause();
+    else void audio.play();
+  }
+
   seek(time: number): void {
     const audio = findAudio(this.doc);
     if (!audio || !Number.isFinite(time)) return;
