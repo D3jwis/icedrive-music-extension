@@ -99,37 +99,9 @@ The extension loads no remote code and enforces a strict Content Security Policy
 - The queue is the audio files in the folder that's currently open.
 - If Icedrive changes its page layout, the extension may need an update. All Icedrive-specific selectors live in [`lib/icedrive-dom.ts`](lib/icedrive-dom.ts).
 
-## Development
-
-```bash
-npm run dev      # launches a browser with the extension and reloads it on every change
-```
-
-| Command | What it does |
-| --- | --- |
-| `npm run dev` | Development mode with hot reload |
-| `npm run build` | Production build into `.output/chrome-mv3` |
-| `npm run zip` | `.zip` package for the Chrome Web Store |
-| `npm test` | Unit tests (Vitest) |
-| `npm run compile` | TypeScript type check |
-| `npm run check:security` | Checks the built extension: permissions, CSP, no `eval` / `innerHTML` / unexpected URLs |
-| `npm run verify` | All of the above plus `npm audit`; this is what CI runs |
-
 ### How it works
 
 Icedrive plays audio in a preview overlay (`#preview`) built on [Plyr](https://plyr.io). The extension reads that player's state and drives it.
-
-| File | Role |
-| --- | --- |
-| [`lib/icedrive-dom.ts`](lib/icedrive-dom.ts) | Knows Icedrive's page structure. The only file to fix if Icedrive changes its HTML. |
-| [`entrypoints/icedrive.content.ts`](entrypoints/icedrive.content.ts) | Content script: reads the player state and runs commands from the popup. |
-| [`entrypoints/icedrive-bridge.content.ts`](entrypoints/icedrive-bridge.content.ts) | Runs in the page context to call Icedrive's own `previewItem()` and open another file from the folder. |
-| [`lib/queue.ts`](lib/queue.ts) | Play order: in sequence or shuffled, with repeat off, folder or single track. |
-| [`lib/media-session.ts`](lib/media-session.ts) | Connects the player to the Media Session API (media keys, browser and OS media panels). |
-| [`lib/in-page-controls.ts`](lib/in-page-controls.ts) | Adds the buttons under Icedrive's player, in a shadow DOM so styles don't clash. |
-| [`entrypoints/background.ts`](entrypoints/background.ts) | Handles keyboard shortcuts and forwards them to the Icedrive tab that's playing. |
-| [`lib/validate.ts`](lib/validate.ts) | Runtime checks for every message, stored setting and URL that comes from outside the current script. |
-| [`entrypoints/popup/`](entrypoints/popup/) | The popup and mini player UI. |
 
 ## License
 
