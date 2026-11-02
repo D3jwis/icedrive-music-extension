@@ -32,6 +32,13 @@ To publish a release:
    `scripts/release-notes.mjs` with that version's changelog section and the
    checksums, followed by GitHub's auto-generated list of merged PRs.
 
+## Chrome Web Store
+
+When the `CWS_*` secrets and variables are set, the same run also uploads the
+zip to the Chrome Web Store and submits it for review. Setup, the one-time
+manual first upload and the store listing texts:
+[docs/chrome-web-store.md](../docs/chrome-web-store.md).
+
 ## Signed .crx (one-time setup)
 
 Each release also publishes `icedrive-music-extension-<version>-chrome.crx`
