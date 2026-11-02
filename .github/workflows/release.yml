@@ -84,16 +84,17 @@ jobs:
       - name: Security check of packaged build
         run: npm run check:security --if-present
 
-      # Signed .crx + update.xml for company-managed browsers. Skipped (with a
-      # warning) until the CRX_PRIVATE_KEY repository secret is set; see
-      # .github/RELEASING.md. The key only ever exists in the runner's temp dir.
+      # Signed .crx + update.xml, published next to the zip. Requires the
+      # CRX_PRIVATE_KEY repository secret (see .github/RELEASING.md); without
+      # it the release stops here, before any tag or release is created.
+      # The key only ever exists in the runner's temp dir.
       - name: Sign .crx
         env:
           CRX_PRIVATE_KEY: ${{ secrets.CRX_PRIVATE_KEY }}
         run: |
           if [ -z "$CRX_PRIVATE_KEY" ]; then
-            echo "::warning::CRX_PRIVATE_KEY secret is not set, so no .crx is published."
-            exit 0
+            echo "::error::CRX_PRIVATE_KEY secret is not set. Add it under Settings → Secrets and variables → Actions (see .github/RELEASING.md)."
+            exit 1
           fi
           VERSION="${TAG#v}"
           ZIP=".output/icedrive-music-extension-$VERSION-chrome.zip"
@@ -105,7 +106,6 @@ jobs:
           node scripts/crx.mjs verify ".output/$CRX"
           node scripts/crx.mjs update-xml ".output/$CRX" "$VERSION" \
             "https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG/$CRX" .output/update.xml
-          echo "HAS_CRX=true" >> "$GITHUB_ENV"
 
       - name: Checksums
         working-directory: .output
@@ -122,7 +122,7 @@ jobs:
       - name: Attest build provenance
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
-          subject-path: ${{ env.HAS_CRX == 'true' && '.output/*.zip, .output/*.crx' || '.output/*.zip' }}
+          subject-path: .output/*.zip, .output/*.crx
 
       # Only for "Run workflow": tag the commit that was just built and tested.
       - name: Create tag

@@ -9,6 +9,12 @@ changes under **Unreleased** as you go and rename it when you tag.
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-11-02
+
+### Fixed
+
+- The signed `.crx` and `update.xml` are now actually published next to the zip. v0.1.1 was released before the signing key was configured and shipped only the zip. The Release workflow now refuses to publish without the key.
+
 ## [0.1.1] - 2026-11-02
 
 ### Added
@@ -43,6 +49,7 @@ First public release for Chrome and Brave.
 - Release zips ship with SHA-256 checksums and a signed build provenance attestation.
 - See [SECURITY.md](SECURITY.md) and the [work laptop guide](docs/enterprise-install.md).
 
-[Unreleased]: https://github.com/D3jwis/icedrive-music-extension/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/D3jwis/icedrive-music-extension/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/D3jwis/icedrive-music-extension/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/D3jwis/icedrive-music-extension/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/D3jwis/icedrive-music-extension/releases/tag/v0.1.0
