@@ -56,3 +56,5 @@ jobs:
           path: .output/*-chrome.zip
           if-no-files-found: error
           retention-days: 14
+          # .output is a dot-directory, which upload-artifact skips by default.
+          include-hidden-files: true
