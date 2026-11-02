@@ -11,13 +11,18 @@ To publish a release:
    bottom). Bump `version` in `package.json` and run `npm install` so
    `package-lock.json` follows. Merge that to `master`. CI fails if the
    version has no changelog section.
-2. Tag the merge commit and push the tag:
+2. Start the release, either way:
 
-   ```sh
-   git checkout master && git pull
-   git tag v0.2.0
-   git push origin v0.2.0
-   ```
+   - **From GitHub:** Actions → **Release** → **Run workflow** on `master`.
+     It tags the current `master` commit as `v` + the `package.json` version
+     once the build and checks pass.
+   - **From a terminal:** tag the merge commit and push the tag:
+
+     ```sh
+     git checkout master && git pull
+     git tag v0.2.0
+     git push origin v0.2.0
+     ```
 
 3. The **Release** workflow checks that the tag equals `v` + the
    `package.json` version, runs `npm run verify` (types, tests, security

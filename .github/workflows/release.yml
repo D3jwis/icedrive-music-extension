@@ -1,10 +1,13 @@
 name: Release
 
-# Push a tag like v0.2.0 (matching "version" in package.json) to publish
-# a GitHub Release with the packaged extension attached.
+# Publishes a GitHub Release with the packaged extension attached, either:
+# - by pushing a tag like v0.2.0 that matches "version" in package.json, or
+# - from Actions → Release → "Run workflow" on master, which creates the
+#   v<package.json version> tag on that commit itself.
 on:
   push:
     tags: ['v*.*.*']
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -31,15 +34,33 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Check tag matches package.json version
+      - name: Resolve tag
         env:
-          TAG: ${{ github.ref_name }}
+          EVENT: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          REF_NAME: ${{ github.ref_name }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           VERSION="$(node -p "require('./package.json').version")"
-          if [ "$TAG" != "v$VERSION" ]; then
-            echo "::error::Tag $TAG does not match package.json version $VERSION (expected v$VERSION)."
-            exit 1
+          if [ "$EVENT" = "workflow_dispatch" ]; then
+            if [ "$REF" != "refs/heads/master" ]; then
+              echo "::error::Run the release from master (got $REF)."
+              exit 1
+            fi
+            TAG="v$VERSION"
+            if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$TAG" >/dev/null 2>&1; then
+              echo "::error::Tag $TAG already exists. Bump the version in package.json and CHANGELOG.md first."
+              exit 1
+            fi
+            echo "CREATE_TAG=true" >> "$GITHUB_ENV"
+          else
+            TAG="$REF_NAME"
+            if [ "$TAG" != "v$VERSION" ]; then
+              echo "::error::Tag $TAG does not match package.json version $VERSION (expected v$VERSION)."
+              exit 1
+            fi
           fi
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
 
       - name: Install dependencies
         run: npm ci
@@ -69,8 +90,6 @@ jobs:
 
       # Fails if CHANGELOG.md has no section for this version.
       - name: Release notes
-        env:
-          TAG: ${{ github.ref_name }}
         run: node scripts/release-notes.mjs "${TAG#v}" release-notes.md .output
 
       - name: Attest build provenance
@@ -78,10 +97,16 @@ jobs:
         with:
           subject-path: .output/*.zip
 
+      # Only for "Run workflow": tag the commit that was just built and tested.
+      - name: Create tag
+        if: env.CREATE_TAG == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api "repos/$GITHUB_REPOSITORY/git/refs" -f ref="refs/tags/$TAG" -f sha="$GITHUB_SHA"
+
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: ${{ github.ref_name }}
         run: |
           gh release create "$TAG" .output/*.zip .output/SHA256SUMS.txt \
             --repo "$GITHUB_REPOSITORY" \
