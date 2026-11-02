@@ -19,7 +19,7 @@
   .wave { position: absolute; left: 0; right: 0; bottom: 0; opacity: .5; }
   .left { position: absolute; left: 80px; top: 50%; transform: translateY(-50%); width: 640px; }
   .logo { display:flex; align-items:center; gap:18px; margin-bottom: 28px; }
-  .logo svg { width: 72px; height: 72px; }
+  .logo svg { width: 84px; height: 84px; filter: drop-shadow(0 8px 24px rgba(23,161,162,.35)); }
   .badge { font-size: 14px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
   h1 { font-size: 58px; font-weight: 800; letter-spacing: -.02em; line-height: 1.05; }
   h1 span { color: var(--accent); }
@@ -37,11 +37,32 @@
   </svg>
   <div class="left">
     <div class="logo">
-      <svg viewBox="0 0 64 64" aria-hidden="true">
-        <rect width="64" height="64" rx="16" fill="#17a1a2"/>
-        <path d="M14 40c0-6 4.5-10 10-10 1.2-5.5 6-9 11.5-9 6.4 0 11.5 5 11.5 11.4 3.8.6 6 3.6 6 7 0 4-3.2 6.6-7 6.6H21c-4 0-7-2.6-7-6z" fill="#0d1220" opacity=".9"/>
-        <path d="M36 28v13.2a3.8 3.8 0 1 1-2-3.3V31l-6 1.6v10.6a3.8 3.8 0 1 1-2-3.3V30.4z" fill="#e9ecf5"/>
-      </svg>
+      <!-- Extension icon, copied from assets-src/icon.svg -->
+      <svg viewBox="0 0 128 128" aria-hidden="true">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a3558"/>
+      <stop offset="1" stop-color="#151a2b"/>
+    </linearGradient>
+    <linearGradient id="ice" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#9ff7f3"/>
+      <stop offset="0.5" stop-color="#2fd0cf"/>
+      <stop offset="1" stop-color="#139a9b"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="120" height="120" rx="28" fill="url(#bg)"/>
+  <rect x="4.75" y="4.75" width="118.5" height="118.5" rx="27.25" fill="none" stroke="#3fd6d4" stroke-opacity=".35" stroke-width="1.5"/>
+  <!-- stem + flag -->
+  <path d="M64 28 h11 c2 12 10 18 20 23 c8 4 12 12 9 22 c-2-8-8-12-18-14 c-4-1-8-2-11-4 v45 h-11z" fill="url(#ice)"/>
+  <!-- ice-crystal note head (hexagon) -->
+  <g transform="translate(52 96)">
+    <polygon points="0,-22 19,-11 19,11 0,22 -19,11 -19,-11" fill="url(#ice)"/>
+    <polygon points="0,-22 19,-11 0,0 -19,-11" fill="#ffffff" fill-opacity=".45"/>
+    <polygon points="0,0 19,-11 19,11 0,22" fill="#0b6f70" fill-opacity=".35"/>
+  </g>
+  <!-- sparkle -->
+  <path d="M32 26 l3 9 9 3 -9 3 -3 9 -3-9 -9-3 9-3z" fill="#c8fbf8"/>
+</svg>
       <div class="badge">Browser extension · Chrome &amp; Brave</div>
     </div>
     <h1>Icedrive Music <span>Player+</span></h1>
