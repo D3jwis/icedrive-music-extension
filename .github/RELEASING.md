@@ -32,6 +32,30 @@ To publish a release:
    `scripts/release-notes.mjs` with that version's changelog section and the
    checksums, followed by GitHub's auto-generated list of merged PRs.
 
+## Signed .crx (one-time setup)
+
+Each release also publishes `icedrive-music-extension-<version>-chrome.crx`
+and `update.xml` for company-managed browsers (see
+[docs/enterprise-install.md](../docs/enterprise-install.md)). They are signed
+with a private key stored as the `CRX_PRIVATE_KEY` repository secret. Without
+the secret, the release still works but skips the `.crx` with a warning.
+
+1. Create the key on your own computer (either command):
+
+   ```sh
+   node scripts/crx.mjs keygen crx-key.pem
+   # or: openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out crx-key.pem
+   ```
+
+2. Copy the whole file, including the `-----BEGIN/END PRIVATE KEY-----` lines,
+   into **Settings → Secrets and variables → Actions → New repository
+   secret** named `CRX_PRIVATE_KEY`.
+3. Back the file up somewhere safe (e.g. a password manager), then delete it
+   from disk. **Never commit it.** The extension ID is derived from this key:
+   if it is lost or changed, managed installs see a different extension.
+
+`node scripts/crx.mjs id crx-key.pem` prints the extension ID for the key.
+
 ## Verifying a download
 
 Each release zip has a signed build provenance attestation, which proves it
@@ -40,6 +64,7 @@ was built by this repository's workflow from the tagged commit:
 ```sh
 gh attestation verify icedrive-music-extension-0.2.0-chrome.zip --repo D3jwis/icedrive-music-extension
 sha256sum -c SHA256SUMS.txt
+node scripts/crx.mjs verify icedrive-music-extension-0.2.0-chrome.crx
 ```
 
 ## Installing a release zip
