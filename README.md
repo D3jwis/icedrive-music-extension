@@ -60,7 +60,12 @@ Icedrive odtwarza muzykę w oknie podglądu (`#preview`) przy użyciu Plyr. Wtyc
 - `lib/in-page-controls.ts` dokleja przyciski pod odtwarzacz Icedrive (w shadow DOM, więc style się nie mieszają) i dodaje je ponownie, gdy Icedrive przebuduje odtwarzacz dla nowego utworu,
 - `entrypoints/background.ts` obsługuje skróty klawiszowe i przekazuje je do karty Icedrive, która gra,
 - `entrypoints/icedrive-bridge.content.ts` działa w kontekście strony i wywołuje funkcję Icedrive `previewItem()`, żeby otworzyć inny plik z folderu,
+- `lib/validate.ts` sprawdza w czasie działania każdą wiadomość, ustawienie i adres, który przychodzi spoza danego skryptu,
 - `entrypoints/popup/` to okienko pod ikoną wtyczki: okładka, tytuł, wykonawca, pasek przewijania, sterowanie i lista utworów (kliknięcie odtwarza; spacja = play/pauza).
+
+## Bezpieczeństwo i komputer służbowy
+
+Wtyczka działa tylko na `icedrive.net`, ma jedno uprawnienie (`storage`), nie wysyła żadnych danych, nie ładuje kodu z sieci i ma ścisłe CSP. Szczegóły i zgłaszanie podatności: [SECURITY.md](SECURITY.md). Instalacja na laptopie firmowym (polityki Chrome/Brave, co przekazać działowi IT): [docs/enterprise-install.md](docs/enterprise-install.md).
 
 ## Skrypty
 
@@ -71,6 +76,8 @@ Icedrive odtwarza muzykę w oknie podglądu (`#preview`) przy użyciu Plyr. Wtyc
 | `npm run zip` | paczka `.zip` do sklepu Chrome Web Store |
 | `npm test` | testy (Vitest) |
 | `npm run compile` | sprawdzenie typów TypeScript |
+| `npm run check:security` | sprawdza gotowy build: uprawnienia, CSP, brak `eval`/`innerHTML`/zewnętrznych adresów |
+| `npm run verify` | wszystko naraz: typy, testy, build, kontrola bezpieczeństwa, `npm audit` |
 
 ## Znane ograniczenia
 

@@ -1,6 +1,7 @@
-import type { ArtResponse, PlayerCommand, PlayerState } from '@/lib/messages';
+import type { PlayerCommand, PlayerState } from '@/lib/messages';
 import type { TrackRef } from '@/lib/icedrive-dom';
 import { formatTime } from '@/lib/format';
+import { parseArtResponse } from '@/lib/validate';
 
 const POLL_MS = 500;
 const ICEDRIVE_URL = 'https://icedrive.net/*';
@@ -54,7 +55,9 @@ function renderArt(sourceUrl: string | null) {
   art.style.backgroundImage = '';
   art.classList.remove('has-image');
   if (!sourceUrl) return;
-  void send<ArtResponse>({ type: 'getArt' }).then((res) => {
+  void send<unknown>({ type: 'getArt' }).then((raw) => {
+    // Only our own base64 JPEG data: URL ever reaches CSS.
+    const res = parseArtResponse(raw);
     if (!res?.dataUrl || res.sourceUrl !== artSource) return;
     art.style.backgroundImage = `url("${res.dataUrl}")`;
     art.classList.add('has-image');

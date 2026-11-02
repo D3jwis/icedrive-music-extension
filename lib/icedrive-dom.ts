@@ -30,6 +30,8 @@ export interface NowPlaying {
   artUrl: string | null;
 }
 
+import { clampText, isFileId } from './validate';
+
 const AUDIO_SELECTOR = '#preview .content audio';
 
 export function findAudio(doc: Document = document): HTMLAudioElement | null {
@@ -43,16 +45,18 @@ export function isPreviewOpen(doc: Document = document): boolean {
 /** Audio files in the currently open folder, in the order Icedrive shows them. */
 export function listTracks(doc: Document = document): TrackRef[] {
   const items = doc.querySelectorAll<HTMLElement>('#file-browser .item.file[data-filetype="audio"]');
+  // Anything that doesn't look like an Icedrive file is skipped, so odd
+  // markup can never turn into a request we pass on to the page.
   return Array.from(items, (el) => ({
     id: el.dataset.id ?? '',
-    fileName: el.dataset.title ?? el.querySelector('.title span')?.textContent?.trim() ?? '',
-    area: el.dataset.in ?? 'cloud',
-  })).filter((t) => t.id !== '');
+    fileName: clampText(el.dataset.title ?? el.querySelector('.title span')?.textContent?.trim() ?? ''),
+    area: el.dataset.in === 'crypto' ? 'crypto' : 'cloud',
+  })).filter((t) => isFileId(t.id));
 }
 
 /** File name shown in the preview's top bar, e.g. "Artist - Song.flac". */
 export function readPreviewFileName(doc: Document = document): string {
-  return doc.querySelector('#preview .top .title')?.textContent?.trim() ?? '';
+  return clampText(doc.querySelector('#preview .top .title')?.textContent?.trim() ?? '');
 }
 
 function backgroundUrl(el: HTMLElement | null): string | null {
@@ -64,8 +68,8 @@ function backgroundUrl(el: HTMLElement | null): string | null {
 export function readNowPlaying(doc: Document = document): NowPlaying | null {
   if (!findAudio(doc)) return null;
   const fileName = readPreviewFileName(doc);
-  const title = doc.querySelector('#id3-title')?.textContent?.trim() || fileName;
-  const artist = doc.querySelector('#id3-artist')?.textContent?.trim() ?? '';
+  const title = clampText(doc.querySelector('#id3-title')?.textContent?.trim() || fileName);
+  const artist = clampText(doc.querySelector('#id3-artist')?.textContent?.trim() ?? '');
   return {
     title,
     artist,
