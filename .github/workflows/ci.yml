@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # `npm run verify` = type-check, tests, build, security gate
+      # (scripts/verify-build.mjs) and npm audit. Fall back to type-check +
+      # tests on branches that predate it.
+      - name: Verify
+        run: |
+          if node -e "process.exit(require('./package.json').scripts?.verify ? 0 : 1)"; then
+            npm run verify
+          else
+            npm run compile
+            npm test
+          fi
+
+      - name: Build and zip (Chrome / Brave)
+        run: npm run zip
+
+      # Re-check the exact build that went into the zip.
+      - name: Security check of packaged build
+        run: npm run check:security --if-present
+
+      - name: Upload zip
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: extension-chrome
+          path: .output/*-chrome.zip
+          if-no-files-found: error
+          retention-days: 14
