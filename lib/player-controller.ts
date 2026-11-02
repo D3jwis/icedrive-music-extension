@@ -8,6 +8,7 @@ import {
 } from './icedrive-dom';
 import { BRIDGE_EVENT, type BridgeOpenFile, type PlayerCommand, type PlayerState } from './messages';
 import { DEFAULT_SETTINGS, nextRepeatMode, PlayQueue, type PlaybackSettings } from './queue';
+import { isArea, isFileId } from './validate';
 
 /** Going "previous" after this many seconds restarts the song instead. */
 const RESTART_THRESHOLD_S = 3;
@@ -170,6 +171,7 @@ export class PlayerController {
   }
 
   private open(track: TrackRef): void {
+    if (!isFileId(track.id) || !isArea(track.area)) return;
     const detail: BridgeOpenFile = { id: track.id, area: track.area };
     this.doc.dispatchEvent(new CustomEvent(BRIDGE_EVENT, { detail: JSON.stringify(detail) }));
   }

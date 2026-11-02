@@ -10,12 +10,17 @@
     "zip": "wxt zip",
     "compile": "tsc --noEmit",
     "test": "vitest run",
-    "postinstall": "wxt prepare"
+    "postinstall": "wxt prepare",
+    "check:security": "node scripts/verify-build.mjs .output/chrome-mv3",
+    "verify": "npm run compile && npm test && npm run build && npm run check:security && npm audit --audit-level=moderate"
   },
   "devDependencies": {
     "happy-dom": "21.0.4",
     "typescript": "5.9.3",
     "vitest": "4.1.12",
     "wxt": "0.21.5"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

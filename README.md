@@ -89,6 +89,10 @@ Your keyboard's media keys work without any setup while Icedrive is playing.
 
 The extension only runs on `icedrive.net` and only asks for the `storage` permission, which it uses to remember your shuffle and repeat settings. It has no analytics, sends nothing to any server, and doesn't touch your Icedrive login or files. Everything happens inside your own Icedrive tab.
 
+## Security and work computers
+
+The extension loads no remote code and enforces a strict Content Security Policy, and every build is checked by `npm run check:security`, which fails on any new permission, weaker CSP or unsafe code pattern. See [SECURITY.md](SECURITY.md) for details and how to report a vulnerability, and [docs/enterprise-install.md](docs/enterprise-install.md) for installing on a managed (company) laptop and what to send your IT team.
+
 ## Known limitations
 
 - Music only plays while Icedrive's preview window is open. Closing the preview stops playback, which is how Icedrive itself works.
@@ -108,6 +112,8 @@ npm run dev      # launches a browser with the extension and reloads it on every
 | `npm run zip` | `.zip` package for the Chrome Web Store |
 | `npm test` | Unit tests (Vitest) |
 | `npm run compile` | TypeScript type check |
+| `npm run check:security` | Checks the built extension: permissions, CSP, no `eval` / `innerHTML` / unexpected URLs |
+| `npm run verify` | All of the above plus `npm audit`; this is what CI runs |
 
 ### How it works
 
@@ -122,6 +128,7 @@ Icedrive plays audio in a preview overlay (`#preview`) built on [Plyr](https://p
 | [`lib/media-session.ts`](lib/media-session.ts) | Connects the player to the Media Session API (media keys, browser and OS media panels). |
 | [`lib/in-page-controls.ts`](lib/in-page-controls.ts) | Adds the buttons under Icedrive's player, in a shadow DOM so styles don't clash. |
 | [`entrypoints/background.ts`](entrypoints/background.ts) | Handles keyboard shortcuts and forwards them to the Icedrive tab that's playing. |
+| [`lib/validate.ts`](lib/validate.ts) | Runtime checks for every message, stored setting and URL that comes from outside the current script. |
 | [`entrypoints/popup/`](entrypoints/popup/) | The popup and mini player UI. |
 
 ### Banner
