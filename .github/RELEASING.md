@@ -1,7 +1,7 @@
 # Releasing
 
-Every push to `master` and every pull request runs **CI** (type-check, tests,
-build). The packaged Chrome/Brave zip is attached to each CI run as an
+Every push to `master` and every pull request runs **CI** (`npm run verify`:
+type-check, tests, build, security gate, `npm audit`). The packaged Chrome/Brave zip is attached to each CI run as an
 artifact for 14 days.
 
 To publish a release:
@@ -17,7 +17,8 @@ To publish a release:
    ```
 
 3. The **Release** workflow checks that the tag equals `v` + the
-   `package.json` version, runs the tests, builds the zip and publishes a
+   `package.json` version, runs `npm run verify` (types, tests, security
+   gate, `npm audit`), builds the zip and publishes a
    GitHub Release with the zip, `SHA256SUMS.txt` and auto-generated notes.
 
 ## Verifying a download

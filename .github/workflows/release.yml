@@ -44,14 +44,24 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Type-check
-        run: npm run compile
-
-      - name: Test
-        run: npm test
+      # `npm run verify` = type-check, tests, build, security gate
+      # (scripts/verify-build.mjs) and npm audit. Fall back to type-check +
+      # tests on branches that predate it.
+      - name: Verify
+        run: |
+          if node -e "process.exit(require('./package.json').scripts?.verify ? 0 : 1)"; then
+            npm run verify
+          else
+            npm run compile
+            npm test
+          fi
 
       - name: Build and zip (Chrome / Brave)
         run: npm run zip
+
+      # Re-check the exact build that went into the zip.
+      - name: Security check of packaged build
+        run: npm run check:security --if-present
 
       - name: Checksums
         working-directory: .output
