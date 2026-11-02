@@ -1,78 +1,139 @@
-# icedrive-music-extension
+<p align="center">
+  <img src="docs/images/banner.png" alt="Icedrive Music Player+ – next/previous, shuffle, repeat, media keys and a mini player for Icedrive" width="100%">
+</p>
 
-Extension for Firefox/Chrome browsers that let you control more aspects of music player inside Icedrive.
+<p align="center">
+  <img alt="Manifest V3" src="https://img.shields.io/badge/Manifest-V3-17a1a2">
+  <img alt="Chrome and Brave" src="https://img.shields.io/badge/Chrome%20%7C%20Brave-supported-202639">
+  <img alt="Firefox" src="https://img.shields.io/badge/Firefox-planned-8f97ad">
+  <img alt="Built with WXT and TypeScript" src="https://img.shields.io/badge/WXT%20%2B%20TypeScript-3178c6">
+  <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/license-MIT-green"></a>
+</p>
 
-Rozszerzenie do Chrome/Brave (później także Firefox), które dodaje do odtwarzacza muzyki w [Icedrive](https://icedrive.net) brakujące funkcje: informacje o utworze, przewijanie, przejście do następnego/poprzedniego, tryb shuffle i loop.
+**Icedrive Music Player+** is a browser extension that turns the basic audio preview in [Icedrive](https://icedrive.net) into a proper music player. Open a folder of songs, press play, and get a queue, next and previous track, shuffle, repeat, media keys and a mini player window.
 
-Zbudowane na [WXT](https://wxt.dev) + TypeScript, Manifest V3.
+> This is an unofficial, community-made extension. It isn't affiliated with or endorsed by Icedrive.
 
-## Status
+## Features
 
-- [x] **Krok 1:** szkielet, odczyt stanu odtwarzacza Icedrive, sterowanie (play/pauza, przewijanie, następny/poprzedni), automatyczne przejście do kolejnego utworu po zakończeniu
-- [x] **Krok 2:** pełny popup z okładką, paskiem przewijania i listą utworów
-- [x] **Krok 3:** shuffle i loop (utwór / cały folder), zapamiętywanie ustawień
-- [x] **Krok 4:** klawisze multimedialne (Media Session API), skróty klawiszowe
+- **Now playing.** Title, artist, album art, and the position of the track in the folder.
+- **Seek bar.** Scrub anywhere in the track from the popup.
+- **Queue.** Every audio file in the open folder, in Icedrive's sort order. Click one to play it.
+- **Auto-advance.** The next track starts when the current one ends.
+- **Shuffle.** Each track plays once per round, and *Previous* goes back to the track you actually heard.
+- **Repeat.** Off, whole folder, or a single track. Shuffle and repeat settings are remembered.
+- **Buttons inside Icedrive.** Shuffle, previous, next and repeat appear right under Icedrive's own player.
+- **Mini player.** Pop the player out into a small window that stays open while you work elsewhere.
+- **Media keys.** Play/pause, next and previous on your keyboard or headphones. Track info and artwork show up in the browser's media panel and in the Windows/macOS media overlay.
+- **Keyboard shortcuts** that work from any tab, and can be made global.
 
-## Instalacja (tryb deweloperski)
+## Screenshots
 
-Wymagany Node.js 20+.
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/images/popup.png" alt="Extension popup with album art, seek bar, controls and the folder queue" width="300"><br>
+      <sub><b>Popup</b>: now playing, seek bar, shuffle and repeat, queue</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/images/detached-window.png" alt="Mini player window showing a longer queue" width="300"><br>
+      <sub><b>Mini player</b>: the popup as its own window, with a taller queue</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2">
+      <img src="docs/images/in-page-controls.png" alt="Shuffle, previous, next and repeat buttons added under Icedrive's player" width="640"><br>
+      <sub><b>Inside Icedrive</b>: extra buttons under the built-in player</sub>
+    </td>
+  </tr>
+</table>
+
+## Installation
+
+The extension isn't in the Chrome Web Store yet, so for now it's installed from source.
+
+**Requirements:** Node.js 20 or newer, and Chrome, Brave or another Chromium-based browser.
 
 ```bash
+git clone https://github.com/D3jwis/icedrive-music-extension.git
+cd icedrive-music-extension
 npm install
 npm run build
 ```
 
-1. Otwórz `chrome://extensions` (w Brave: `brave://extensions`).
-2. Włącz **Tryb dewelopera**.
-3. Kliknij **Załaduj rozpakowane** i wskaż folder `.output/chrome-mv3`.
-4. Odśwież kartę z Icedrive.
+1. Open `chrome://extensions` (in Brave, `brave://extensions`).
+2. Turn on **Developer mode**.
+3. Click **Load unpacked** and select the `.output/chrome-mv3` folder.
+4. Reload your Icedrive tab.
 
-Podczas pracy nad kodem `npm run dev` uruchamia przeglądarkę z wtyczką i przeładowuje ją przy każdej zmianie.
+## Usage
 
-## Przyciski w odtwarzaczu Icedrive i okno odpięte
+1. Open a folder with music on [icedrive.net](https://icedrive.net) and play any song.
+2. Click the extension icon for the popup, or use the buttons that now appear under Icedrive's player.
+3. Click **↗** in the corner of the popup to open the mini player window. Clicking it again focuses the window that's already open.
 
-- Pod odtwarzaczem Icedrive pojawiają się przyciski **losowo**, **poprzedni**, **następny** i **powtarzanie**. Play, przewijanie i głośność zostają w samym odtwarzaczu Icedrive. Ustawienia są wspólne z popupem.
-- Przycisk ↗ w rogu popupu otwiera go jako **małe osobne okno**, które zostaje otwarte, gdy klikasz gdzie indziej. W tym oknie lista utworów wykorzystuje całą wysokość. Ponowne kliknięcie przenosi do już otwartego okna zamiast tworzyć nowe.
+### Keyboard shortcuts
 
-## Klawisze multimedialne i skróty
-
-Klawisze multimedialne na klawiaturze i słuchawkach (play/pauza, następny, poprzedni) działają, gdy gra muzyka z Icedrive. Tytuł, wykonawca i okładka pojawiają się też w panelu multimediów Chrome/Brave oraz w nakładce systemowej Windows/macOS, gdzie również można przewijać.
-
-Skróty wtyczki działają z każdej karty:
-
-| Skrót | Działanie |
+| Shortcut | Action |
 | --- | --- |
-| `Alt+Shift+Spacja` | odtwórz / pauza |
-| `Alt+Shift+.` | następny utwór |
-| `Alt+Shift+,` | poprzedni utwór |
-| `Alt+Shift+S` | losowo włącz / wyłącz |
+| `Alt+Shift+Space` | Play / pause |
+| `Alt+Shift+.` | Next track |
+| `Alt+Shift+,` | Previous track |
+| `Alt+Shift+S` | Toggle shuffle |
 
-Skróty zmienisz w `chrome://extensions/shortcuts` (w Brave `brave://extensions/shortcuts`). Tam możesz też ustawić je jako „globalne”, żeby działały, gdy przeglądarka jest w tle. W popupie spacja włącza i wyłącza odtwarzanie.
+Change them at `chrome://extensions/shortcuts` (`brave://extensions/shortcuts`). You can also set them to **Global** there so they work when the browser is in the background. In the popup, `Space` toggles play/pause.
 
-## Jak to działa
+Your keyboard's media keys work without any setup while Icedrive is playing.
 
-Icedrive odtwarza muzykę w oknie podglądu (`#preview`) przy użyciu Plyr. Wtyczka:
+## Privacy
 
-- `lib/icedrive-dom.ts` zna strukturę strony Icedrive (jedyne miejsce do poprawy, jeśli Icedrive zmieni HTML),
-- `entrypoints/icedrive.content.ts` czyta stan odtwarzacza i wykonuje polecenia z popupu,
-- `lib/queue.ts` ustala kolejność odtwarzania: po kolei albo losowo (każdy utwór raz, „poprzedni” wraca do faktycznie słuchanego), z powtarzaniem wyłączonym, całego folderu albo jednego utworu. Ustawienia są zapisywane w `storage.local`,
-- `lib/media-session.ts` łączy odtwarzacz z Media Session API (klawisze multimedialne, panel multimediów, nakładka systemowa),
-- `lib/in-page-controls.ts` dokleja przyciski pod odtwarzacz Icedrive (w shadow DOM, więc style się nie mieszają) i dodaje je ponownie, gdy Icedrive przebuduje odtwarzacz dla nowego utworu,
-- `entrypoints/background.ts` obsługuje skróty klawiszowe i przekazuje je do karty Icedrive, która gra,
-- `entrypoints/icedrive-bridge.content.ts` działa w kontekście strony i wywołuje funkcję Icedrive `previewItem()`, żeby otworzyć inny plik z folderu,
-- `entrypoints/popup/` to okienko pod ikoną wtyczki: okładka, tytuł, wykonawca, pasek przewijania, sterowanie i lista utworów (kliknięcie odtwarza; spacja = play/pauza).
+The extension only runs on `icedrive.net` and only asks for the `storage` permission, which it uses to remember your shuffle and repeat settings. It has no analytics, sends nothing to any server, and doesn't touch your Icedrive login or files. Everything happens inside your own Icedrive tab.
 
-## Skrypty
+## Known limitations
 
-| Polecenie | Co robi |
+- Music only plays while Icedrive's preview window is open. Closing the preview stops playback, which is how Icedrive itself works.
+- The queue is the audio files in the folder that's currently open.
+- If Icedrive changes its page layout, the extension may need an update. All Icedrive-specific selectors live in [`lib/icedrive-dom.ts`](lib/icedrive-dom.ts).
+
+## Development
+
+```bash
+npm run dev      # launches a browser with the extension and reloads it on every change
+```
+
+| Command | What it does |
 | --- | --- |
-| `npm run dev` | tryb deweloperski z hot reload |
-| `npm run build` | build do `.output/chrome-mv3` |
-| `npm run zip` | paczka `.zip` do sklepu Chrome Web Store |
-| `npm test` | testy (Vitest) |
-| `npm run compile` | sprawdzenie typów TypeScript |
+| `npm run dev` | Development mode with hot reload |
+| `npm run build` | Production build into `.output/chrome-mv3` |
+| `npm run zip` | `.zip` package for the Chrome Web Store |
+| `npm test` | Unit tests (Vitest) |
+| `npm run compile` | TypeScript type check |
 
-## Znane ograniczenia
+### How it works
 
-- Muzyka gra tylko, gdy okno podglądu Icedrive jest otwarte. Zamknięcie podglądu zatrzymuje odtwarzanie (tak działa Icedrive).
-- Kolejka to pliki audio z aktualnie otwartego folderu, w kolejności sortowania w Icedrive.
+Icedrive plays audio in a preview overlay (`#preview`) built on [Plyr](https://plyr.io). The extension reads that player's state and drives it.
+
+| File | Role |
+| --- | --- |
+| [`lib/icedrive-dom.ts`](lib/icedrive-dom.ts) | Knows Icedrive's page structure. The only file to fix if Icedrive changes its HTML. |
+| [`entrypoints/icedrive.content.ts`](entrypoints/icedrive.content.ts) | Content script: reads the player state and runs commands from the popup. |
+| [`entrypoints/icedrive-bridge.content.ts`](entrypoints/icedrive-bridge.content.ts) | Runs in the page context to call Icedrive's own `previewItem()` and open another file from the folder. |
+| [`lib/queue.ts`](lib/queue.ts) | Play order: in sequence or shuffled, with repeat off, folder or single track. |
+| [`lib/media-session.ts`](lib/media-session.ts) | Connects the player to the Media Session API (media keys, browser and OS media panels). |
+| [`lib/in-page-controls.ts`](lib/in-page-controls.ts) | Adds the buttons under Icedrive's player, in a shadow DOM so styles don't clash. |
+| [`entrypoints/background.ts`](entrypoints/background.ts) | Handles keyboard shortcuts and forwards them to the Icedrive tab that's playing. |
+| [`entrypoints/popup/`](entrypoints/popup/) | The popup and mini player UI. |
+
+### Banner
+
+The banner at the top is rendered from [`docs/banner/banner.html`](docs/banner/banner.html). After editing it, run `node docs/banner/render.mjs` (needs Playwright with Chromium) to regenerate `docs/images/banner.png`.
+
+## Roadmap
+
+- [ ] Firefox build
+- [ ] Automated builds and GitHub Releases
+- [ ] Chrome Web Store listing
+
+## License
+
+[MIT](LICENSE) © 2026 D3jwis

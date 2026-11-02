@@ -1,0 +1,59 @@
+<!doctype html>
+<!-- Source of docs/images/banner.png. Re-render with: node docs/banner/render.mjs -->
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  :root { --bg:#171b2a; --surface:#202639; --text:#e9ecf5; --muted:#8f97ad; --accent:#17a1a2; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1280px; height: 400px; }
+  body {
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    color: var(--text);
+    background:
+      radial-gradient(900px 500px at 85% 120%, rgba(23,161,162,.35), transparent 60%),
+      radial-gradient(600px 400px at 0% 0%, rgba(80,110,220,.18), transparent 60%),
+      var(--bg);
+    position: relative; overflow: hidden;
+  }
+  .wave { position: absolute; left: 0; right: 0; bottom: 0; opacity: .5; }
+  .left { position: absolute; left: 80px; top: 50%; transform: translateY(-50%); width: 640px; }
+  .logo { display:flex; align-items:center; gap:18px; margin-bottom: 28px; }
+  .logo svg { width: 72px; height: 72px; }
+  .badge { font-size: 14px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  h1 { font-size: 58px; font-weight: 800; letter-spacing: -.02em; line-height: 1.05; }
+  h1 span { color: var(--accent); }
+  p { margin-top: 18px; font-size: 22px; color: var(--muted); line-height: 1.4; }
+  .chips { display:flex; gap:10px; margin-top: 26px; flex-wrap: wrap; }
+  .chip { font-size: 15px; padding: 7px 14px; border-radius: 999px; background: var(--surface); border: 1px solid #313953; color: var(--text); }
+  .shot { position: absolute; right: 70px; top: 40px; width: 340px; border-radius: 16px; overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.06); transform: rotate(2deg); }
+  .shot img { display:block; width: 340px; }
+</style>
+</head>
+<body>
+  <svg class="wave" viewBox="0 0 1280 120" preserveAspectRatio="none" height="120">
+    <path d="M0 80 Q 80 40 160 80 T 320 80 T 480 80 T 640 80 T 800 80 T 960 80 T 1120 80 T 1280 80 V120 H0Z" fill="#17a1a2" opacity=".12"/>
+  </svg>
+  <div class="left">
+    <div class="logo">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <rect width="64" height="64" rx="16" fill="#17a1a2"/>
+        <path d="M14 40c0-6 4.5-10 10-10 1.2-5.5 6-9 11.5-9 6.4 0 11.5 5 11.5 11.4 3.8.6 6 3.6 6 7 0 4-3.2 6.6-7 6.6H21c-4 0-7-2.6-7-6z" fill="#0d1220" opacity=".9"/>
+        <path d="M36 28v13.2a3.8 3.8 0 1 1-2-3.3V31l-6 1.6v10.6a3.8 3.8 0 1 1-2-3.3V30.4z" fill="#e9ecf5"/>
+      </svg>
+      <div class="badge">Browser extension · Chrome &amp; Brave</div>
+    </div>
+    <h1>Icedrive Music <span>Player+</span></h1>
+    <p>Next &amp; previous, shuffle, repeat, media keys and a mini player for the music player in Icedrive.</p>
+    <div class="chips">
+      <div class="chip">Next / previous</div>
+      <div class="chip">Shuffle</div>
+      <div class="chip">Repeat</div>
+      <div class="chip">Media keys</div>
+      <div class="chip">Mini player</div>
+    </div>
+  </div>
+  <div class="shot"><img src="../images/popup.png" alt=""></div>
+</body>
+</html>
