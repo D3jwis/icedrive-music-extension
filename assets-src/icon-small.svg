@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <!-- Toolbar variant (16/32 px), same palette as icon.svg -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#1459c4"/>
+      <stop offset="1" stop-color="#08c8d1"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="16" height="16" rx="3.5" fill="url(#bg)"/>
+  <path d="M7.6 2.2 h2.1 c.3 1.5 1.2 2.2 2.3 2.8 c1 .6 1.4 1.7 1.1 2.9 c-.3-1-1-1.5-2.2-1.7 c-.5-.1-.9-.2-1.2-.4 v5.6 h-2.1z" fill="#ffffff"/>
+  <polygon points="6.2,8.6 9.1,10.2 9.1,12.9 6.2,14.4 3.3,12.9 3.3,10.2" fill="#ffffff"/>
+  <polygon points="6.2,11.7 9.1,10.2 9.1,12.9 6.2,14.4" fill="#9fdcf2"/>
+</svg>
