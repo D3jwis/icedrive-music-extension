@@ -6,8 +6,11 @@ artifact for 14 days.
 
 To publish a release:
 
-1. Bump `version` in `package.json` (e.g. `0.2.0`) and run `npm install` so
-   `package-lock.json` follows. Merge that to `master`.
+1. In `CHANGELOG.md`, rename `## [Unreleased]` to `## [0.2.0] - YYYY-MM-DD`
+   (add a fresh empty `## [Unreleased]` above it and update the links at the
+   bottom). Bump `version` in `package.json` and run `npm install` so
+   `package-lock.json` follows. Merge that to `master`. CI fails if the
+   version has no changelog section.
 2. Tag the merge commit and push the tag:
 
    ```sh
@@ -19,7 +22,10 @@ To publish a release:
 3. The **Release** workflow checks that the tag equals `v` + the
    `package.json` version, runs `npm run verify` (types, tests, security
    gate, `npm audit`), builds the zip and publishes a
-   GitHub Release with the zip, `SHA256SUMS.txt` and auto-generated notes.
+   GitHub Release with the zip and `SHA256SUMS.txt`. The release text comes
+   from `.github/release-notes-template.md`, filled in by
+   `scripts/release-notes.mjs` with that version's changelog section and the
+   checksums, followed by GitHub's auto-generated list of merged PRs.
 
 ## Verifying a download
 
