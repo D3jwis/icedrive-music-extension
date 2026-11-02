@@ -131,16 +131,6 @@ Icedrive plays audio in a preview overlay (`#preview`) built on [Plyr](https://p
 | [`lib/validate.ts`](lib/validate.ts) | Runtime checks for every message, stored setting and URL that comes from outside the current script. |
 | [`entrypoints/popup/`](entrypoints/popup/) | The popup and mini player UI. |
 
-### Banner
-
-The banner at the top is rendered from [`docs/banner/banner.html`](docs/banner/banner.html). After editing it, run `node docs/banner/render.mjs` (needs Playwright with Chromium) to regenerate `docs/images/banner.png`.
-
-## Roadmap
-
-- [ ] Firefox build
-- [ ] Automated builds and GitHub Releases
-- [ ] Chrome Web Store listing
-
 ## License
 
 [MIT](LICENSE) © 2026 D3jwis
