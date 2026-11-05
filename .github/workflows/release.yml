@@ -24,6 +24,8 @@ jobs:
       contents: write      # create the release and upload assets
       id-token: write      # sign the build provenance attestation
       attestations: write  # store the attestation
+    outputs:
+      tag: ${{ steps.resolve.outputs.tag }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -35,6 +37,7 @@ jobs:
           cache: npm
 
       - name: Resolve tag
+        id: resolve
         env:
           EVENT: ${{ github.event_name }}
           REF: ${{ github.ref }}
@@ -61,6 +64,7 @@ jobs:
             fi
           fi
           echo "TAG=$TAG" >> "$GITHUB_ENV"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
       - name: Install dependencies
         run: npm ci
@@ -144,3 +148,44 @@ jobs:
             --notes-file release-notes.md \
             --generate-notes \
             --verify-tag
+
+  # Sends the released zip to the Chrome Web Store and submits it for review.
+  # Runs once the repository variable CWS_EXTENSION_ID is set; setup and the
+  # one-time manual first upload are described in docs/chrome-web-store.md.
+  # If it fails, fix the cause and use "Re-run failed jobs": the GitHub
+  # release above is already published and stays as it is.
+  chrome-web-store:
+    needs: release
+    if: vars.CWS_EXTENSION_ID != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+
+      - name: Download the released zip and check its checksum
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.release.outputs.tag }}
+        run: |
+          mkdir dist
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --dir dist \
+            --pattern '*-chrome.zip' --pattern SHA256SUMS.txt
+          cd dist && sha256sum --check --ignore-missing SHA256SUMS.txt
+
+      - name: Upload and submit for review
+        env:
+          CWS_CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
+          CWS_CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
+          CWS_REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
+          CWS_PUBLISHER_ID: ${{ vars.CWS_PUBLISHER_ID }}
+          CWS_EXTENSION_ID: ${{ vars.CWS_EXTENSION_ID }}
+          CWS_PUBLISH_TYPE: ${{ vars.CWS_PUBLISH_TYPE }}
+        run: node scripts/cws-publish.mjs dist/*-chrome.zip

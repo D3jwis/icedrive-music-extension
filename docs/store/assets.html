@@ -1,0 +1,98 @@
+<!doctype html>
+<!-- Source of the Chrome Web Store images in docs/store/. Re-render with: node docs/store/render.mjs -->
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  :root { --bg:#171b2a; --surface:#202639; --text:#e9ecf5; --muted:#8f97ad; --accent:#17a1a2; }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; color: var(--text); overflow: hidden;
+    background:
+      radial-gradient(900px 500px at 85% 120%, rgba(23,161,162,.35), transparent 60%),
+      radial-gradient(600px 400px at 0% 0%, rgba(80,110,220,.18), transparent 60%),
+      var(--bg);
+  }
+  .shot { width: 1280px; height: 800px; display: flex; align-items: center; gap: 70px; padding: 0 90px; }
+  .copy { flex: 1; }
+  .brand { display: flex; align-items: center; gap: 14px; margin-bottom: 36px; font-weight: 700; font-size: 20px; }
+  .brand img { width: 56px; height: 56px; }
+  h1 { font-size: 52px; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; }
+  h1 span { color: var(--accent); }
+  p { margin-top: 20px; font-size: 24px; color: var(--muted); line-height: 1.45; }
+  .frame { border-radius: 18px; overflow: hidden; flex: none;
+    box-shadow: 0 30px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.06); }
+  .frame img { display: block; }
+  .tile { width: 440px; height: 280px; display: flex; flex-direction: column; justify-content: center; padding: 0 36px; }
+  .tile img { width: 64px; height: 64px; margin-bottom: 18px; }
+  .tile h1 { font-size: 34px; }
+  .tile p { font-size: 17px; margin-top: 10px; }
+  .marquee { width: 1400px; height: 560px; display: flex; align-items: center; justify-content: space-between; padding: 0 100px; }
+  .marquee .copy img { width: 88px; height: 88px; margin-bottom: 26px; }
+  .marquee h1 { font-size: 64px; }
+  .marquee p { font-size: 26px; max-width: 760px; }
+  .marquee .frame { transform: rotate(2deg); }
+  .chips { display: flex; gap: 10px; margin-top: 28px; flex-wrap: wrap; }
+  .chip { font-size: 18px; padding: 8px 16px; border-radius: 999px; background: var(--surface); border: 1px solid #313953; }
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; width: 560px; flex: none; }
+  .card { background: var(--surface); border: 1px solid #313953; border-radius: 18px; padding: 26px; }
+  .card b { display: block; font-size: 24px; margin-bottom: 8px; color: var(--accent); }
+  .card span { font-size: 18px; color: var(--muted); line-height: 1.4; }
+</style>
+</head>
+<body>
+<script>
+  // ?v=popup | mini | inpage | privacy | tile | marquee. Content is fixed text, built with DOM APIs.
+  const shots = {
+    popup: { img: '../images/popup.png', w: 380, title: ['Now playing, ', 'in one click'], text: 'Album art, seek bar, shuffle, repeat and the whole folder as a queue, right under the toolbar icon.' },
+    mini: { img: '../images/detached-window.png', w: 400, title: ['A mini player that ', 'stays open'], text: 'Pop the player out into its own window and keep control while you work in other tabs.' },
+    inpage: { img: '../images/in-page-controls.png', w: 700, title: ['Right inside ', 'Icedrive'], text: 'Shuffle, previous, next and repeat buttons added under Icedrive’s own player.' },
+  };
+  const v = new URLSearchParams(location.search).get('v') || 'popup';
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; };
+  const icon = () => { const i = el('img'); i.src = '../../assets-src/icon.svg'; i.alt = ''; return i; };
+  if (v === 'marquee') {
+    const m = el('div', 'marquee');
+    const copy = el('div', 'copy');
+    const h = el('h1'); h.append('Icedrive Music ', el('span', '', 'Player+'));
+    const chips = el('div', 'chips');
+    for (const c of ['Queue', 'Shuffle', 'Repeat', 'Media keys', 'Mini player']) chips.append(el('span', 'chip', c));
+    copy.append(icon(), h, el('p', '', 'Turn Icedrive\u2019s audio preview into a proper music player.'), chips);
+    const frame = el('div', 'frame'); const img = el('img'); img.src = '../images/popup.png'; img.style.width = '300px'; frame.append(img);
+    m.append(copy, frame);
+    document.body.append(m);
+  } else if (v === 'privacy') {
+    const wrap = el('div', 'shot');
+    const copy = el('div', 'copy');
+    const brand = el('div', 'brand'); brand.append(icon(), 'Icedrive Music Player+');
+    const h = el('h1'); h.append('Private ', el('span', '', 'by design'));
+    copy.append(brand, h, el('p', '', 'Safe for a work laptop: it only runs on icedrive.net and nothing ever leaves your browser.'));
+    const cards = el('div', 'cards');
+    for (const [t, d] of [
+      ['1 permission', 'Only storage, to remember shuffle and repeat.'],
+      ['1 website', 'Runs on icedrive.net and nowhere else.'],
+      ['0 data sent', 'No analytics, no tracking, no network requests.'],
+      ['0 remote code', 'Everything ships in the package, strict CSP.'],
+    ]) { const c = el('div', 'card'); c.append(el('b', '', t), el('span', '', d)); cards.append(c); }
+    wrap.append(copy, cards);
+    document.body.append(wrap);
+  } else if (v === 'tile') {
+    const t = el('div', 'tile');
+    const h = el('h1'); h.append('Icedrive Music ', el('span', '', 'Player+'));
+    t.append(icon(), h, el('p', '', 'Shuffle, repeat, queue, media keys and a mini player for Icedrive.'));
+    document.body.append(t);
+  } else {
+    const s = shots[v];
+    const wrap = el('div', 'shot');
+    const copy = el('div', 'copy');
+    const brand = el('div', 'brand'); brand.append(icon(), 'Icedrive Music Player+');
+    const h = el('h1'); h.append(s.title[0], el('span', '', s.title[1]));
+    copy.append(brand, h, el('p', '', s.text));
+    const frame = el('div', 'frame'); const img = el('img'); img.src = s.img; img.style.width = s.w + 'px'; frame.append(img);
+    if (v === 'inpage') { wrap.style.flexDirection = 'column'; wrap.style.justifyContent = 'center'; wrap.style.alignItems = 'flex-start'; copy.style.flex = 'none'; }
+    wrap.append(copy, frame);
+    document.body.append(wrap);
+  }
+</script>
+</body>
+</html>

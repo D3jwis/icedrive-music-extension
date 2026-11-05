@@ -9,6 +9,10 @@ changes under **Unreleased** as you go and rename it when you tag.
 
 ## [Unreleased]
 
+### Added
+
+- Releases can publish to the Chrome Web Store automatically (Chrome Web Store API v2), with store listing texts and images in `docs/`.
+
 ## [0.1.2] - 2026-11-02
 
 ### Fixed
