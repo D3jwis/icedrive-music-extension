@@ -13,6 +13,10 @@ changes under **Unreleased** as you go and rename it when you tag.
 
 - Releases can publish to the Chrome Web Store automatically (Chrome Web Store API v2), with store listing texts and images in `docs/`.
 
+### Changed
+
+- Shuffle no longer picks any of the last five songs played, also after a reshuffle with repeat all or after picking a song by hand. Folders under 10 songs avoid fewer (half the folder), so shuffle doesn't become a fixed loop.
+
 ## [0.1.2] - 2026-11-02
 
 ### Fixed
