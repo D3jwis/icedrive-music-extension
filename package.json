@@ -16,8 +16,8 @@
   },
   "devDependencies": {
     "happy-dom": "21.0.4",
-    "typescript": "5.9.3",
-    "vitest": "4.1.12",
+    "typescript": "7.0.2",
+    "vitest": "5.1.0",
     "wxt": "0.21.5"
   },
   "engines": {
