@@ -25,7 +25,7 @@ export default defineConfig({
   manifest: ({ command }) => ({
     name: 'Icedrive Music Player+',
     description:
-      'Rozszerza odtwarzacz muzyki w Icedrive: informacje o utworze, przewijanie, następny/poprzedni, shuffle i loop.',
+      'Extends the music player in Icedrive: track info, seeking, next/previous, shuffle and repeat.',
     // Security: keep this list minimal. Any change here must also be made in
     // scripts/verify-build.mjs, which fails the build on unexpected permissions.
     host_permissions: ['https://icedrive.net/*'],
@@ -41,19 +41,19 @@ export default defineConfig({
     commands: {
       'play-pause': {
         suggested_key: { default: 'Alt+Shift+Space' },
-        description: 'Odtwórz / pauza',
+        description: 'Play / pause',
       },
       'next-track': {
         suggested_key: { default: 'Alt+Shift+Period' },
-        description: 'Następny utwór',
+        description: 'Next track',
       },
       'previous-track': {
         suggested_key: { default: 'Alt+Shift+Comma' },
-        description: 'Poprzedni utwór',
+        description: 'Previous track',
       },
       'toggle-shuffle': {
         suggested_key: { default: 'Alt+Shift+S' },
-        description: 'Włącz / wyłącz losowo',
+        description: 'Toggle shuffle',
       },
     },
   }),

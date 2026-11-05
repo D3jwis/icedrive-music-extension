@@ -18,7 +18,7 @@
 
 - **Now playing.** Title, artist, album art, and the position of the track in the folder.
 - **Seek bar.** Scrub anywhere in the track from the popup.
-- **Queue.** Every audio file in the open folder, in Icedrive's sort order. Click one to play it.
+- **Queue.** Every audio file in the open folder, in Icedrive's sort order, under the folder's name. Click one to play it.
 - **Auto-advance.** The next track starts when the current one ends.
 - **Shuffle.** Each track plays once per round, and *Previous* goes back to the track you actually heard.
 - **Repeat.** Off, whole folder, or a single track. Shuffle and repeat settings are remembered.

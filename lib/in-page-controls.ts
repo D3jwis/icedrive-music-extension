@@ -42,7 +42,7 @@ const STYLE = `
   .badge[hidden] { display: none; }
 `;
 
-const REPEAT_LABELS = { off: 'wyłączone', all: 'cały folder', one: 'jeden utwór' } as const;
+const REPEAT_LABELS = { off: 'off', all: 'whole folder', one: 'one track' } as const;
 
 /**
  * Builds a button with DOM APIs (no innerHTML), so nothing on this path can
@@ -89,10 +89,10 @@ export function mountInPageControls(player: PlayerController, doc: Document = do
     const q = <T extends HTMLElement>(sel: string) => root!.querySelector<T>(sel)!;
     const shuffle = q('#shuffle');
     shuffle.setAttribute('aria-pressed', String(state.settings.shuffle));
-    shuffle.title = `Losowo: ${state.settings.shuffle ? 'włączone' : 'wyłączone'}`;
+    shuffle.title = `Shuffle: ${state.settings.shuffle ? 'on' : 'off'}`;
     const repeat = q('#repeat');
     repeat.setAttribute('aria-pressed', String(state.settings.repeat !== 'off'));
-    repeat.title = `Powtarzanie: ${REPEAT_LABELS[state.settings.repeat]}`;
+    repeat.title = `Repeat: ${REPEAT_LABELS[state.settings.repeat]}`;
     q('.badge').hidden = state.settings.repeat !== 'one';
     q<HTMLButtonElement>('#next').disabled = !state.hasNext;
   };
@@ -111,10 +111,10 @@ export function mountInPageControls(player: PlayerController, doc: Document = do
     bar.setAttribute('role', 'toolbar');
     bar.setAttribute('aria-label', 'Icedrive Music Player+');
     bar.append(
-      button(doc, 'shuffle', 'Losowo', ICONS.shuffle, true),
-      button(doc, 'prev', 'Poprzedni', ICONS.prev),
-      button(doc, 'next', 'Następny', ICONS.next),
-      button(doc, 'repeat', 'Powtarzanie', ICONS.repeat, true),
+      button(doc, 'shuffle', 'Shuffle', ICONS.shuffle, true),
+      button(doc, 'prev', 'Previous', ICONS.prev),
+      button(doc, 'next', 'Next', ICONS.next),
+      button(doc, 'repeat', 'Repeat', ICONS.repeat, true),
     );
     root.append(style, bar);
     root.addEventListener('click', (e) => {

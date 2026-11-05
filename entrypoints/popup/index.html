@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pl">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <title>Icedrive Music Player+</title>
@@ -8,8 +8,12 @@
   <body>
     <main id="app">
       <header class="head">
-        <span class="brand">Icedrive Music Player+</span>
-        <button id="detach" class="icon-btn" type="button" title="Odepnij do osobnego okna" aria-label="Odepnij do osobnego okna">
+        <img class="logo" src="/icon/96.png" width="30" height="30" alt="" />
+        <div class="brand">
+          <span class="brand-kicker">Icedrive</span>
+          <span class="brand-name">Music Player<b>+</b></span>
+        </div>
+        <button id="detach" class="icon-btn" type="button" title="Open in a separate window" aria-label="Open in a separate window">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7h-2zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3z" /></svg>
         </button>
       </header>
@@ -30,23 +34,23 @@
       </section>
 
       <section id="transport" class="transport" hidden>
-        <input id="seek" type="range" min="0" max="0" step="0.1" value="0" aria-label="Przewiń" />
+        <input id="seek" type="range" min="0" max="0" step="0.1" value="0" aria-label="Seek" />
         <div class="times"><span id="current">0:00</span><span id="duration">0:00</span></div>
         <div class="controls">
-          <button id="shuffle" class="btn btn-toggle" title="Losowo: wyłączone" aria-label="Losowo" aria-pressed="false">
+          <button id="shuffle" class="btn btn-toggle" title="Shuffle: off" aria-label="Shuffle" aria-pressed="false">
             <svg viewBox="0 0 24 24"><path d="M10.59 9.17 5.41 4 4 5.41l5.17 5.17zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4zm.33 9.41-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04z" /></svg>
           </button>
-          <button id="prev" class="btn" title="Poprzedni (po 3 s: od początku)" aria-label="Poprzedni">
+          <button id="prev" class="btn" title="Previous (after 3 s: restart track)" aria-label="Previous">
             <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z" /></svg>
           </button>
-          <button id="play" class="btn btn-main" title="Odtwórz / pauza" aria-label="Odtwórz">
+          <button id="play" class="btn btn-main" title="Play / pause" aria-label="Play">
             <svg id="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
             <svg id="icon-pause" viewBox="0 0 24 24" hidden><path d="M6 19h4V5H6zm8-14v14h4V5z" /></svg>
           </button>
-          <button id="next" class="btn" title="Następny" aria-label="Następny">
+          <button id="next" class="btn" title="Next" aria-label="Next">
             <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6zM16 6v12h2V6z" /></svg>
           </button>
-          <button id="repeat" class="btn btn-toggle" title="Powtarzanie: wyłączone" aria-label="Powtarzanie" aria-pressed="false">
+          <button id="repeat" class="btn btn-toggle" title="Repeat: off" aria-label="Repeat" aria-pressed="false">
             <svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2z" /></svg>
             <span id="repeat-one" class="badge" hidden>1</span>
           </button>
@@ -55,7 +59,10 @@
 
       <section id="queue-wrap" class="queue-wrap" hidden>
         <div class="queue-head">
-          <span>Utwory w folderze</span>
+          <span class="folder">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8z" /></svg>
+            <span id="folder-name">Tracks in this folder</span>
+          </span>
           <span id="queue-count" class="muted"></span>
         </div>
         <ol id="queue" class="queue"></ol>

@@ -9,6 +9,8 @@
  *   <audio id="player">  wrapped by Plyr (encrypted files use #audio-player)
  * The file list lives in #file-browser as .item.file elements with
  * data-id="file-<n>", data-filetype, data-in ("cloud" | "crypto") and data-title.
+ * The path of the open folder is #breadcrumbs, with the open folder marked
+ * .breadcrumb-item.active ("My Icedrive" > "Music" > ...).
  *
  * If Icedrive changes its markup, this is the only file that should need fixing.
  */
@@ -52,6 +54,14 @@ export function listTracks(doc: Document = document): TrackRef[] {
     fileName: clampText(el.dataset.title ?? el.querySelector('.title span')?.textContent?.trim() ?? ''),
     area: el.dataset.in === 'crypto' ? 'crypto' : 'cloud',
   })).filter((t) => isFileId(t.id));
+}
+
+/** Name of the open folder, from Icedrive's breadcrumbs, or "" if there are none. */
+export function readFolderName(doc: Document = document): string {
+  const crumb =
+    doc.querySelector('#breadcrumbs .breadcrumb-item.active') ??
+    Array.from(doc.querySelectorAll('#breadcrumbs .breadcrumb-item')).at(-1);
+  return clampText(crumb?.textContent?.trim() ?? '', 200);
 }
 
 /** File name shown in the preview's top bar, e.g. "Artist - Song.flac". */

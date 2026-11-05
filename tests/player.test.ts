@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { findCurrentIndex, listTracks, readNowPlaying } from '../lib/icedrive-dom';
+import { findCurrentIndex, listTracks, readFolderName, readNowPlaying } from '../lib/icedrive-dom';
 import { PlayerController } from '../lib/player-controller';
 import { BRIDGE_EVENT } from '../lib/messages';
 
@@ -29,6 +29,14 @@ describe('reading the Icedrive page', () => {
       { id: 'file-103', fileName: 'Artist B - Second Song.mp3', area: 'cloud' },
       { id: 'file-104', fileName: 'Artist C - Third Song.flac', area: 'crypto' },
     ]);
+  });
+
+  it('reads the open folder name from the breadcrumbs', () => {
+    expect(readFolderName()).toBe('Road Trip Mix');
+    document.querySelector('#breadcrumbs .active')?.classList.remove('active');
+    expect(readFolderName()).toBe('Road Trip Mix');
+    document.getElementById('breadcrumbs')?.remove();
+    expect(readFolderName()).toBe('');
   });
 
   it('reads the playing song from ID3 fields and the preview title', () => {

@@ -81,7 +81,7 @@ Open a folder of songs on Icedrive, press play, and you get:
 
 • Now playing: title, artist, album art and the track's position in the folder
 • Seek bar to scrub anywhere in the track
-• Queue of every audio file in the folder, in Icedrive's order. Click one to play it
+• Queue of every audio file in the folder, in Icedrive's order, with the folder's name. Click one to play it
 • Auto-advance to the next track
 • Shuffle: every track once per round, and Previous goes back to what you actually heard
 • Repeat: off, whole folder, or one track. Remembered between sessions

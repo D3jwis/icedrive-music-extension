@@ -9,9 +9,20 @@ changes under **Unreleased** as you go and rename it when you tag.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-05
+
 ### Added
 
+- **Header banner** at the top of the popup and mini player with the extension's icon and name.
+- **Folder name** above the queue, so you can see which Icedrive folder is playing, with the number of tracks.
 - Releases can publish to the Chrome Web Store automatically (Chrome Web Store API v2), with store listing texts and images in `docs/`.
+- `docs/images/render.mjs` renders the popup screenshots from the real build, so README and store images can be refreshed after UI changes.
+
+### Changed
+
+- **The whole interface is in English**: popup, mini player, buttons inside Icedrive, tooltips, keyboard shortcut names and the extension description.
+- Scrollbars in the popup and mini player now look like the ones in Icedrive's file list.
+- README and Chrome Web Store screenshots show the new English interface.
 
 ## [0.1.2] - 2026-11-02
 
@@ -53,7 +64,8 @@ First public release for Chrome and Brave.
 - Release zips ship with SHA-256 checksums and a signed build provenance attestation.
 - See [SECURITY.md](SECURITY.md) and the [work laptop guide](docs/enterprise-install.md).
 
-[Unreleased]: https://github.com/D3jwis/icedrive-music-extension/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/D3jwis/icedrive-music-extension/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/D3jwis/icedrive-music-extension/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/D3jwis/icedrive-music-extension/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/D3jwis/icedrive-music-extension/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/D3jwis/icedrive-music-extension/releases/tag/v0.1.0
