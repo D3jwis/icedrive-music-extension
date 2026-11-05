@@ -223,9 +223,33 @@ body {
 .queue-head {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  gap: 10px;
   font-size: 12px;
   font-weight: 600;
   margin-bottom: 6px;
+}
+.queue-head .muted {
+  flex: none;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.folder {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.folder svg {
+  flex: none;
+  width: 15px;
+  height: 15px;
+  fill: var(--accent);
+}
+#folder-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .queue {
   list-style: none;
@@ -233,6 +257,7 @@ body {
   padding: 0;
   max-height: 230px;
   overflow-y: auto;
+  padding-right: 2px;
 }
 .queue button {
   width: 100%;
@@ -316,43 +341,132 @@ body {
   text-align: center;
 }
 
-/* Header with the detach button */
+/* Banner at the top: the extension's icon and name on its blue tile colours. */
 .head {
+  position: relative;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin: -4px -4px 10px 0;
+  gap: 10px;
+  margin: -14px -14px 14px;
+  padding: 11px 10px 11px 14px;
+  color: #fff;
+  overflow: hidden;
+  background:
+    radial-gradient(120px 70px at 92% -10%, rgba(8, 200, 209, 0.45), transparent 70%),
+    radial-gradient(160px 90px at 10% 140%, rgba(20, 144, 214, 0.35), transparent 70%),
+    linear-gradient(115deg, #0e1f45 0%, #123a78 55%, #0f6aa8 100%);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+}
+/* A faint sparkle, echoing the one on the icon. */
+.head::after {
+  content: '';
+  position: absolute;
+  right: 54px;
+  top: 9px;
+  width: 9px;
+  height: 9px;
+  background: rgba(255, 255, 255, 0.55);
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  pointer-events: none;
+}
+.logo {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
 }
 .brand {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--muted);
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+.brand-kicker {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #8fe9ef;
+}
+.brand-name {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.brand-name b {
+  color: #3fdbe3;
 }
 .icon-btn {
-  width: 28px;
-  height: 28px;
+  flex: none;
+  width: 30px;
+  height: 30px;
   padding: 0;
   border: 0;
-  border-radius: 6px;
-  background: transparent;
-  color: var(--muted);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
   display: grid;
   place-items: center;
   cursor: pointer;
 }
 .icon-btn:hover {
-  background: var(--hover);
-  color: var(--text);
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
 }
 .icon-btn:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid #3fdbe3;
   outline-offset: 2px;
 }
 .icon-btn svg {
   width: 16px;
   height: 16px;
   fill: currentColor;
+}
+
+/* Scrollbars styled like Icedrive's file list (.window-content-scrollbar). */
+:root {
+  --scroll-thumb: #bcc6d6;
+  --scroll-thumb-hover: #253775;
+  --scroll-track: #fafafb;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --scroll-thumb: #304771;
+    --scroll-thumb-hover: #04e3d1;
+    --scroll-track: #131726;
+  }
+}
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-button {
+  width: 0;
+  height: 0;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb);
+  border-radius: 1px;
+}
+::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:active {
+  background: var(--scroll-thumb-hover);
+}
+::-webkit-scrollbar-track {
+  background: var(--scroll-track);
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+/* Firefox has no ::-webkit-scrollbar. (In Chrome, scrollbar-color would
+   override the rules above, so it is only set where they don't exist.) */
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+  }
 }
 
 /* Detached window: fill the window and let the queue use the spare height. */

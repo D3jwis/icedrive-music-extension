@@ -11,6 +11,8 @@ export interface PlayerState {
   duration: number;
   /** Audio files in the open folder. */
   tracks: TrackRef[];
+  /** Name of the folder open in Icedrive ("" if unknown). */
+  folderName: string;
   /** Index into `tracks` of the playing file, or -1. */
   currentIndex: number;
   settings: PlaybackSettings;

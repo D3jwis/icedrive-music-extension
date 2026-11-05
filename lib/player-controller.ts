@@ -3,6 +3,7 @@ import {
   findCurrentIndex,
   isPreviewOpen,
   listTracks,
+  readFolderName,
   readNowPlaying,
   type TrackRef,
 } from './icedrive-dom';
@@ -54,6 +55,7 @@ export class PlayerController {
       currentTime: audio?.currentTime ?? 0,
       duration: Number.isFinite(audio?.duration) ? audio!.duration : 0,
       tracks,
+      folderName: readFolderName(this.doc),
       currentIndex,
       settings: this.getSettings(),
       hasNext: active && this.queue.hasNext(currentId, this.settings),

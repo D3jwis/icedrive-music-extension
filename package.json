@@ -1,8 +1,8 @@
 {
   "name": "icedrive-music-extension",
-  "description": "Rozszerza odtwarzacz muzyki w Icedrive: informacje o utworze, przewijanie, następny/poprzedni, shuffle i loop.",
+  "description": "Extends the music player in Icedrive: track info, seeking, next/previous, shuffle and repeat.",
   "private": true,
-  "version": "0.1.2",
+  "version": "0.2.0",
   "type": "module",
   "scripts": {
     "dev": "wxt",

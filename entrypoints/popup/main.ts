@@ -80,10 +80,13 @@ function updateSeekFill() {
   seek.style.setProperty('--pct', `${pct}%`);
 }
 
-function renderQueue(tracks: TrackRef[], currentIndex: number) {
+function renderQueue(tracks: TrackRef[], currentIndex: number, folderName = '') {
   const wrap = $('queue-wrap');
   wrap.hidden = tracks.length === 0;
-  $('queue-count').textContent = String(tracks.length);
+  $('queue-count').textContent = `${tracks.length} ${tracks.length === 1 ? 'track' : 'tracks'}`;
+  const folder = $('folder-name');
+  folder.textContent = folderName || 'Tracks in this folder';
+  folder.title = folderName ? `Playing from folder: ${folderName}` : '';
 
   const list = $('queue');
   const key = tracks.map((t) => t.id).join(',');
@@ -124,18 +127,18 @@ function renderQueue(tracks: TrackRef[], currentIndex: number) {
 
 function render(state: PlayerState | null) {
   if (!state) {
-    showEmpty('Otwórz Icedrive w przeglądarce. Jeśli karta jest już otwarta, odśwież ją.');
+    showEmpty('Open Icedrive in your browser. If the tab is already open, reload it.');
     renderQueue([], -1);
     return;
   }
 
-  renderQueue(state.tracks, state.currentIndex);
+  renderQueue(state.tracks, state.currentIndex, state.folderName);
 
   if (!state.active || !state.nowPlaying) {
     showEmpty(
       state.tracks.length
-        ? 'Nic teraz nie gra. Wybierz utwór z listy poniżej.'
-        : 'Nic teraz nie gra. Otwórz folder z muzyką w Icedrive.',
+        ? 'Nothing is playing. Pick a track from the list below.'
+        : 'Nothing is playing. Open a music folder in Icedrive.',
     );
     artSource = undefined;
     return;
@@ -150,27 +153,27 @@ function render(state: PlayerState | null) {
   $('artist').textContent = nowPlaying.artist;
   $('artist').hidden = !nowPlaying.artist;
   $('position').textContent =
-    state.currentIndex >= 0 ? `Utwór ${state.currentIndex + 1} z ${state.tracks.length}` : '';
+    state.currentIndex >= 0 ? `Track ${state.currentIndex + 1} of ${state.tracks.length}` : '';
   renderArt(nowPlaying.artUrl);
   renderSeek(state.currentTime, state.duration);
 
   // <svg> has no .hidden property, so toggle the attribute directly.
   $('icon-play').toggleAttribute('hidden', !state.paused);
   $('icon-pause').toggleAttribute('hidden', state.paused);
-  $('play').setAttribute('aria-label', state.paused ? 'Odtwórz' : 'Pauza');
+  $('play').setAttribute('aria-label', state.paused ? 'Play' : 'Pause');
   $<HTMLButtonElement>('next').disabled = !state.hasNext;
   renderModes(state);
 }
 
-const REPEAT_LABELS = { off: 'wyłączone', all: 'cały folder', one: 'jeden utwór' } as const;
+const REPEAT_LABELS = { off: 'off', all: 'whole folder', one: 'one track' } as const;
 
 function renderModes({ settings }: PlayerState) {
   const shuffle = $('shuffle');
   shuffle.setAttribute('aria-pressed', String(settings.shuffle));
-  shuffle.title = `Losowo: ${settings.shuffle ? 'włączone' : 'wyłączone'}`;
+  shuffle.title = `Shuffle: ${settings.shuffle ? 'on' : 'off'}`;
   const repeat = $('repeat');
   repeat.setAttribute('aria-pressed', String(settings.repeat !== 'off'));
-  repeat.title = `Powtarzanie: ${REPEAT_LABELS[settings.repeat]}`;
+  repeat.title = `Repeat: ${REPEAT_LABELS[settings.repeat]}`;
   $('repeat-one').hidden = settings.repeat !== 'one';
 }
 
