@@ -1,5 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-  <!-- Toolbar sizes (16/32 px): same drawing as icon.svg. -->
+  <!-- Toolbar sizes (16/32 px): same drawing as icon.svg. Face details and headphone outlines are cut out of the
+       white shape (mask), so the Icedrive-style blue -> cyan background shows through. -->
   <defs>
     <linearGradient id="bg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#1459c4"/><stop offset=".55" stop-color="#1490d6"/><stop offset="1" stop-color="#08c8d1"/></linearGradient>
     <linearGradient id="fur" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".7" stop-color="#f2fbfe"/><stop offset="1" stop-color="#d3f0fa"/></linearGradient>
@@ -7,8 +8,8 @@
     <mask id="m" maskUnits="userSpaceOnUse" x="0" y="0" width="128" height="128">
       <g transform="translate(0 7)">
       <!-- ears (inner ear cut out) -->
-      <circle cx="29" cy="31" r="12" fill="white"/><circle cx="29" cy="32" r="5" fill="black"/>
-      <circle cx="99" cy="31" r="12" fill="white"/><circle cx="99" cy="32" r="5" fill="black"/>
+      <circle cx="28" cy="30" r="15" fill="white"/><circle cx="28" cy="31" r="6" fill="black"/>
+      <circle cx="100" cy="30" r="15" fill="white"/><circle cx="100" cy="31" r="6" fill="black"/>
       <!-- head, separated from ears and chest by a background-coloured gap -->
       <path d="M64 25 C 87 25, 101 37, 103 53 C 109 59, 111 69, 105 75 C 108 84, 99 92, 90 94 C 82 102, 46 102, 38 94 C 29 92, 20 84, 23 75 C 17 69, 19 59, 25 53 C 27 37, 41 25, 64 25 Z" fill="white" stroke="black" stroke-width="6"/>
       <path d="M64 25 C 87 25, 101 37, 103 53 C 109 59, 111 69, 105 75 C 108 84, 99 92, 90 94 C 82 102, 46 102, 38 94 C 29 92, 20 84, 23 75 C 17 69, 19 59, 25 53 C 27 37, 41 25, 64 25 Z" fill="white"/>
