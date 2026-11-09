@@ -25,7 +25,7 @@
 - **Repeat.** Off, whole folder, or a single track. Shuffle and repeat settings are remembered.
 - **Equalizer.** 10 bands (32 Hz to 16 kHz), a preamp and 17 presets (bass boost, vocal, rock, podcast, laptop speakers and more), with a limiter so boosts don't distort. Shared by all Icedrive tabs and remembered.
 - **Volume.** Volume slider and mute in the popup and mini player, in sync with Icedrive's own volume slider.
-- **Everything inside Icedrive.** Under Icedrive's own player: shuffle, previous, next and repeat, the visualizer, the full equalizer and the folder's track list as tabs, and a button for the mini player. You don't need to open the popup at all.
+- **Everything inside Icedrive.** The same player as the popup takes the place of Icedrive's audio preview: cover, clock, visualizer, seek bar, shuffle/previous/next/repeat, volume and speed, with the full equalizer and the folder's track list side by side, and a button for the mini player. You don't need to open the popup at all.
 - **Mini player.** Pop the player out into a small window that stays open while you work elsewhere. Make it short and it becomes a compact bar.
 - **Media keys.** Play/pause, next and previous on your keyboard or headphones. Track info and artwork show up in the browser's media panel and in the Windows/macOS media overlay.
 - **Keyboard shortcuts** that work from any tab, and can be made global.
@@ -51,8 +51,8 @@
   </tr>
   <tr>
     <td align="center" colspan="2">
-      <img src="docs/images/in-page-controls.png" alt="Shuffle, previous, next and repeat buttons, a spectrum visualizer and a 10-band equalizer added under Icedrive's player" width="640"><br>
-      <sub><b>Inside Icedrive</b>: controls, visualizer, equalizer and track list under the built-in player</sub>
+      <img src="docs/images/in-page-controls.png" alt="The extension's player inside Icedrive's audio preview, with the equalizer and track list side by side" width="640"><br>
+      <sub><b>Inside Icedrive</b>: the same player, with the equalizer and track list side by side</sub>
     </td>
   </tr>
 </table>
@@ -78,8 +78,8 @@ npm run build
 ## Usage
 
 1. Open a folder with music on [icedrive.net](https://icedrive.net) and play any song.
-2. Use the controls that now appear under Icedrive's player, or click the extension icon for the popup.
-   The **Equalizer** and **Tracks** tabs open the equalizer and the folder's track list; click the open tab again to close it.
+2. Use the player that now appears in Icedrive's preview, or click the extension icon for the popup.
+   In the popup, the **Tracks** and **Equalizer** tabs switch between the folder's track list and the equalizer.
 3. Click **↗** in the corner of the popup to open the mini player window. Clicking it again focuses the window that's already open.
 
 ### Equalizer
