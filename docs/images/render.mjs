@@ -117,8 +117,6 @@ async function shot({ out, width, height, scheme, detached, eqOpen = false, view
   await page.waitForSelector('#art.has-image');
   await page.evaluate(() => document.querySelector('.tracks').scrollTo(0, 0));
   await page.waitForTimeout(150);
-  // Cropped to the popup's real 600 px: hide the page scrollbar a real popup would show.
-  if (viewportOnly) await page.addStyleTag({ content: 'html::-webkit-scrollbar { display: none; }' });
   const target = detached || viewportOnly ? page : page.locator('body');
   await target.screenshot({ path: here(`./${out}`) });
   await page.close();
