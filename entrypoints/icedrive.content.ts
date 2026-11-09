@@ -1,3 +1,4 @@
+import '@/assets/icedrive-player-theme.css';
 import { artToDataUrl } from '@/lib/album-art';
 import { connectMediaSession } from '@/lib/media-session';
 import { mountInPageControls } from '@/lib/in-page-controls';

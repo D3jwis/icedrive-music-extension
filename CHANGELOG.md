@@ -15,6 +15,10 @@ changes under **Unreleased** as you go and rename it when you tag.
 - **Volume slider and mute** in the popup and mini player, synced with Icedrive's own volume.
 - **Track list and mini player button inside Icedrive**, so every option is available right under Icedrive's player without opening the popup.
 
+### Changed
+
+- **Icedrive's player bar matches its dark preview**: navy background, light icons and a teal progress bar instead of Plyr's default white bar with dark icons.
+
 ## [0.2.0] - 2026-11-05
 
 ### Added
