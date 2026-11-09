@@ -17,13 +17,13 @@
       <path d="M54 68 C 54 62, 74 62, 74 68 C 74 74, 67 78, 64 78 C 61 78, 54 74, 54 68 Z" fill="black"/>
       <path d="M64 78 v4 M56 85 q8 4 16 0 M42 58 q6.5 4 13 0 M73 58 q6.5 4 13 0" fill="none" stroke="black" stroke-width="3" stroke-linecap="round"/>
       <!-- headphones: same colour, outlined by gaps -->
-      <path d="M25.6 45.3 C 34 2, 94 2, 102.4 45.3" fill="none" stroke="black" stroke-width="12" stroke-linecap="round"/>
-      <path d="M25.6 45.3 C 34 2, 94 2, 102.4 45.3" fill="none" stroke="white" stroke-width="6" stroke-linecap="round"/>
-      <g transform="rotate(15 23 55)">
+      <path d="M24.7 45.2 C 33 2, 95 2, 103.3 45.2" fill="none" stroke="black" stroke-width="12" stroke-linecap="round"/>
+      <path d="M24.7 45.2 C 33 2, 95 2, 103.3 45.2" fill="none" stroke="white" stroke-width="6" stroke-linecap="round"/>
+      <g transform="rotate(10 23 55)">
       <rect x="8" y="33" width="30" height="44" rx="14" fill="black"/>
       <rect x="11" y="36" width="24" height="38" rx="11" fill="white"/>
       <path d="M19 45 q-5 10 0 20" fill="none" stroke="black" stroke-width="3" stroke-linecap="round"/></g>
-      <g transform="rotate(-15 105 55)">
+      <g transform="rotate(-10 105 55)">
       <rect x="90" y="33" width="30" height="44" rx="14" fill="black"/>
       <rect x="93" y="36" width="24" height="38" rx="11" fill="white"/>
       <path d="M109 45 q5 10 0 20" fill="none" stroke="black" stroke-width="3" stroke-linecap="round"/></g>
