@@ -6,7 +6,8 @@
  * TypeScript types disappear at runtime, so anything that arrives from
  * outside the current script is treated as `unknown` and checked here first.
  */
-import type { ArtResponse, BridgeOpenFile, PlayerCommand } from './messages';
+import type { ArtResponse, BackgroundRequest, BridgeOpenFile, PlayerCommand } from './messages';
+import { clampDb, cloneEq, DEFAULT_EQ, EQ_BANDS, isPresetId, CUSTOM_PRESET, type EqSettings } from './equalizer';
 import { DEFAULT_SETTINGS, type PlaybackSettings, type RepeatMode } from './queue';
 
 /** Icedrive item ids look like "file-3857256753". */
@@ -63,8 +64,87 @@ export function parseCommand(value: unknown): PlayerCommand | null {
         : null;
     case 'playTrack':
       return isFileId(value.id) ? { type: 'playTrack', id: value.id } : null;
+    case 'toggleMute':
+      return { type: 'toggleMute' };
+    case 'setVolume':
+      return typeof value.volume === 'number' && value.volume >= 0 && value.volume <= 1
+        ? { type: 'setVolume', volume: value.volume }
+        : null;
+    case 'eqPreset':
+      return isPresetId(value.preset) ? { type: 'eqPreset', preset: value.preset } : null;
+    case 'setEq': {
+      const eq = parseEqPatch(value.eq);
+      return eq ? { type: 'setEq', eq } : null;
+    }
     default:
       return null;
+  }
+}
+
+function isDb(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value);
+}
+
+function isGains(value: unknown): value is number[] {
+  return Array.isArray(value) && value.length === EQ_BANDS && value.every(isDb);
+}
+
+function isEqPreset(value: unknown): value is string {
+  return value === CUSTOM_PRESET || isPresetId(value);
+}
+
+/** A partial equalizer change; null if any given field is malformed or nothing is given. */
+export function parseEqPatch(value: unknown): Partial<EqSettings> | null {
+  if (!isRecord(value)) return null;
+  const patch: Partial<EqSettings> = {};
+  if ('enabled' in value) {
+    if (typeof value.enabled !== 'boolean') return null;
+    patch.enabled = value.enabled;
+  }
+  if ('preset' in value) {
+    if (!isEqPreset(value.preset)) return null;
+    patch.preset = value.preset;
+  }
+  if ('preamp' in value) {
+    if (!isDb(value.preamp)) return null;
+    patch.preamp = clampDb(value.preamp);
+  }
+  if ('gains' in value) {
+    if (!isGains(value.gains)) return null;
+    patch.gains = value.gains.map(clampDb);
+  }
+  return Object.keys(patch).length ? patch : null;
+}
+
+/** Equalizer settings from storage, with anything unexpected replaced by the default. */
+export function sanitizeEq(value: unknown): EqSettings {
+  const eq = cloneEq(DEFAULT_EQ);
+  if (!isRecord(value)) return eq;
+  if (typeof value.enabled === 'boolean') eq.enabled = value.enabled;
+  if (isEqPreset(value.preset)) eq.preset = value.preset;
+  if (isDb(value.preamp)) eq.preamp = clampDb(value.preamp);
+  if (isGains(value.gains)) eq.gains = value.gains.map(clampDb);
+  return eq;
+}
+
+export function parseBackgroundRequest(value: unknown): BackgroundRequest | null {
+  return isRecord(value) && value.type === 'openMiniPlayer' ? { type: 'openMiniPlayer' } : null;
+}
+
+/**
+ * True for messages from our own content script on an Icedrive tab (not
+ * from extension pages or other sites).
+ */
+export function isFromIcedriveTab(
+  sender: { id?: string; url?: string; tab?: unknown },
+  extensionId: string = browser.runtime.id,
+): boolean {
+  if (sender.id !== extensionId || !sender.tab || typeof sender.url !== 'string') return false;
+  try {
+    const url = new URL(sender.url);
+    return url.protocol === 'https:' && url.hostname === 'icedrive.net';
+  } catch {
+    return false;
   }
 }
 

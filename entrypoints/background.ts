@@ -1,4 +1,6 @@
 import type { PlayerCommand } from '@/lib/messages';
+import { openMiniPlayer } from '@/lib/mini-player';
+import { isFromIcedriveTab, parseBackgroundRequest } from '@/lib/validate';
 
 /** Keyboard shortcuts (manifest "commands") mapped to player commands. */
 const SHORTCUTS: Record<string, PlayerCommand> = {
@@ -13,6 +15,13 @@ const SHORTCUTS: Record<string, PlayerCommand> = {
  * or else the most recently used Icedrive tab.
  */
 export default defineBackground(() => {
+  // The "mini player" button inside Icedrive: content scripts can't open
+  // extension windows themselves.
+  browser.runtime.onMessage.addListener((raw: unknown, sender) => {
+    if (!isFromIcedriveTab(sender) || !parseBackgroundRequest(raw)) return;
+    void openMiniPlayer();
+  });
+
   browser.commands.onCommand.addListener(async (name) => {
     const cmd = SHORTCUTS[name];
     if (!cmd) return;

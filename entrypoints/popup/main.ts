@@ -1,6 +1,9 @@
 import type { PlayerCommand, PlayerState } from '@/lib/messages';
 import type { TrackRef } from '@/lib/icedrive-dom';
 import { formatTime } from '@/lib/format';
+import { openMiniPlayer } from '@/lib/mini-player';
+import { CUSTOM_PRESET, EQ_PRESETS } from '@/lib/equalizer';
+import type { EqStatus } from '@/lib/audio-engine';
 import { parseArtResponse } from '@/lib/validate';
 
 const POLL_MS = 500;
@@ -8,6 +11,13 @@ const ICEDRIVE_URL = 'https://icedrive.net/*';
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 const seek = $<HTMLInputElement>('seek');
+const volume = $<HTMLInputElement>('volume');
+const presetSelect = $<HTMLSelectElement>('eq-preset');
+
+for (const [id, preset] of Object.entries(EQ_PRESETS)) presetSelect.add(new Option(preset.label, id));
+const customOption = new Option('Custom', CUSTOM_PRESET);
+customOption.disabled = true;
+presetSelect.add(customOption);
 
 /** File name without its extension, used in the queue. */
 function displayName(track: TrackRef): string {
@@ -74,10 +84,41 @@ function renderSeek(currentTime: number, duration: number) {
   $('duration').textContent = formatTime(duration);
 }
 
-function updateSeekFill() {
-  const max = Number(seek.max) || 0;
-  const pct = max ? (Number(seek.value) / max) * 100 : 0;
-  seek.style.setProperty('--pct', `${pct}%`);
+function updateFill(input: HTMLInputElement) {
+  const max = Number(input.max) || 0;
+  const pct = max ? (Number(input.value) / max) * 100 : 0;
+  input.style.setProperty('--pct', `${pct}%`);
+}
+
+const updateSeekFill = () => updateFill(seek);
+
+let draggingVolume = false;
+
+function renderVolume(level: number, muted: boolean) {
+  if (!draggingVolume) volume.value = String(muted ? 0 : level);
+  updateFill(volume);
+  $('volume-pct').textContent = `${Math.round(Number(volume.value) * 100)}%`;
+  const silent = muted || level === 0;
+  $('icon-volume').toggleAttribute('hidden', silent);
+  $('icon-muted').toggleAttribute('hidden', !silent);
+  const label = muted ? 'Unmute' : 'Mute';
+  $('mute').setAttribute('aria-label', label);
+  $('mute').title = label;
+}
+
+const EQ_STATUS_TEXT: Partial<Record<EqStatus, string>> = {
+  checking: 'Equalizer: connecting…',
+  unavailable: "Equalizer can't process this song (Icedrive's server doesn't allow it).",
+};
+
+function renderEq({ eq, eqStatus }: PlayerState) {
+  $<HTMLInputElement>('eq-on').checked = eq.enabled;
+  presetSelect.value = eq.preset;
+  presetSelect.disabled = !eq.enabled;
+  const status = $('eq-status');
+  status.textContent = EQ_STATUS_TEXT[eqStatus] ?? '';
+  status.hidden = !status.textContent;
+  status.classList.toggle('warn', eqStatus === 'unavailable');
 }
 
 function renderQueue(tracks: TrackRef[], currentIndex: number, folderName = '') {
@@ -156,6 +197,8 @@ function render(state: PlayerState | null) {
     state.currentIndex >= 0 ? `Track ${state.currentIndex + 1} of ${state.tracks.length}` : '';
   renderArt(nowPlaying.artUrl);
   renderSeek(state.currentTime, state.duration);
+  renderVolume(state.volume, state.muted);
+  renderEq(state);
 
   // <svg> has no .hidden property, so toggle the attribute directly.
   $('icon-play').toggleAttribute('hidden', !state.paused);
@@ -180,18 +223,11 @@ function renderModes({ settings }: PlayerState) {
 // ---- Detached window ----
 
 const DETACHED = new URLSearchParams(location.search).has('detached');
-const DETACHED_URL = browser.runtime.getURL('/popup.html?detached=1');
 if (DETACHED) document.body.classList.add('detached');
 
 /** Opens the player in a small separate window, or focuses the one already open. */
 async function detach() {
-  const contexts = await browser.runtime.getContexts({ contextTypes: ['TAB'], documentUrls: [DETACHED_URL] });
-  const existing = contexts.find((c) => c.windowId !== -1);
-  if (existing) {
-    await browser.windows.update(existing.windowId, { focused: true });
-  } else {
-    await browser.windows.create({ url: DETACHED_URL, type: 'popup', width: 360, height: 640, focused: true });
-  }
+  await openMiniPlayer();
   window.close();
 }
 
@@ -215,6 +251,21 @@ seek.addEventListener('change', () => {
   dragging = false;
   void run({ type: 'seek', time: Number(seek.value) });
 });
+
+volume.addEventListener('input', () => {
+  draggingVolume = true;
+  renderVolume(Number(volume.value), false);
+  void send({ type: 'setVolume', volume: Number(volume.value) });
+});
+volume.addEventListener('change', () => {
+  draggingVolume = false;
+  void run({ type: 'setVolume', volume: Number(volume.value) });
+});
+$('mute').addEventListener('click', () => run({ type: 'toggleMute' }));
+$<HTMLInputElement>('eq-on').addEventListener('change', (e) =>
+  run({ type: 'setEq', eq: { enabled: (e.target as HTMLInputElement).checked } }),
+);
+presetSelect.addEventListener('change', () => run({ type: 'eqPreset', preset: presetSelect.value }));
 
 $('queue').addEventListener('click', (e) => {
   const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-id]');

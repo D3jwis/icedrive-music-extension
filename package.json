@@ -1,6 +1,6 @@
 {
   "name": "icedrive-music-extension",
-  "description": "Extends the music player in Icedrive: track info, seeking, next/previous, shuffle and repeat.",
+  "description": "Extends the music player in Icedrive: track info, seeking, next/previous, shuffle, repeat, volume and a 10-band equalizer.",
   "private": true,
   "version": "0.2.0",
   "type": "module",

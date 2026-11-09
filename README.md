@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/images/banner.png" alt="Icedrive Music Player+ – next/previous, shuffle, repeat, media keys and a mini player for Icedrive" width="100%">
+  <img src="docs/images/banner.png" alt="Icedrive Music Player+ – equalizer, volume, shuffle, repeat, next/previous and a mini player for Icedrive" width="100%">
 </p>
 
 <p align="center">
@@ -22,7 +22,9 @@
 - **Auto-advance.** The next track starts when the current one ends.
 - **Shuffle.** Each track plays once per round, and *Previous* goes back to the track you actually heard.
 - **Repeat.** Off, whole folder, or a single track. Shuffle and repeat settings are remembered.
-- **Buttons inside Icedrive.** Shuffle, previous, next and repeat appear right under Icedrive's own player.
+- **Equalizer.** 10 bands (32 Hz to 16 kHz), a preamp and 17 presets (bass boost, vocal, rock, podcast, laptop speakers and more), with a limiter so boosts don't distort. Shared by all Icedrive tabs and remembered.
+- **Volume.** Volume slider and mute in the popup and mini player, in sync with Icedrive's own volume slider.
+- **Everything inside Icedrive.** Under Icedrive's own player: shuffle, previous, next and repeat, the full equalizer, the folder's track list and a button for the mini player. You don't need to open the popup at all.
 - **Mini player.** Pop the player out into a small window that stays open while you work elsewhere.
 - **Media keys.** Play/pause, next and previous on your keyboard or headphones. Track info and artwork show up in the browser's media panel and in the Windows/macOS media overlay.
 - **Keyboard shortcuts** that work from any tab, and can be made global.
@@ -42,8 +44,8 @@
   </tr>
   <tr>
     <td align="center" colspan="2">
-      <img src="docs/images/in-page-controls.png" alt="Shuffle, previous, next and repeat buttons added under Icedrive's player" width="640"><br>
-      <sub><b>Inside Icedrive</b>: extra buttons under the built-in player</sub>
+      <img src="docs/images/in-page-controls.png" alt="Shuffle, previous, next and repeat buttons and a 10-band equalizer added under Icedrive's player" width="640"><br>
+      <sub><b>Inside Icedrive</b>: controls, equalizer and track list under the built-in player</sub>
     </td>
   </tr>
 </table>
@@ -69,8 +71,15 @@ npm run build
 ## Usage
 
 1. Open a folder with music on [icedrive.net](https://icedrive.net) and play any song.
-2. Click the extension icon for the popup, or use the buttons that now appear under Icedrive's player.
+2. Use the controls that now appear under Icedrive's player, or click the extension icon for the popup.
+   The equalizer button (the bars icon) opens the equalizer, the list icon shows the folder's tracks.
 3. Click **↗** in the corner of the popup to open the mini player window. Clicking it again focuses the window that's already open.
+
+### Equalizer
+
+Turn it on with the switch, then pick a preset or drag the bands. Lower the **Pre** (preamp) slider when you boost a lot, so loud songs stay clean. The popup has the on/off switch and the presets; all bands are in Icedrive's player.
+
+Icedrive streams songs from its download servers. To run them through the equalizer, the extension asks the browser to load the song in CORS mode, which restarts it at the same spot once (a split second). If Icedrive's server ever refuses that for a file, the song just plays as before without the equalizer, and the panel says so.
 
 ### Keyboard shortcuts
 

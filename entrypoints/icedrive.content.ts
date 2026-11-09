@@ -1,16 +1,23 @@
+import '@/assets/icedrive-player-theme.css';
 import { artToDataUrl } from '@/lib/album-art';
 import { connectMediaSession } from '@/lib/media-session';
 import { mountInPageControls } from '@/lib/in-page-controls';
 import { PlayerController } from '@/lib/player-controller';
+import { AudioEngine } from '@/lib/audio-engine';
 import type { ArtResponse } from '@/lib/messages';
-import { isFromExtensionPage, parseCommand, sanitizeSettings } from '@/lib/validate';
+import { isFromExtensionPage, parseCommand, sanitizeEq, sanitizeSettings } from '@/lib/validate';
 
 const SETTINGS_KEY = 'playbackSettings';
+const EQ_KEY = 'equalizer';
+/** Equalizer sliders fire many changes a second; storage gets the last one. */
+const EQ_SAVE_DELAY_MS = 300;
+const EQ_SYNC_MS = 1000;
 
 export default defineContentScript({
   matches: ['https://icedrive.net/*'],
   async main() {
-    const player = new PlayerController();
+    const engine = new AudioEngine();
+    const player = new PlayerController(document, Math.random, engine);
     player.enableAutoAdvance();
     connectMediaSession(player);
 
@@ -22,6 +29,28 @@ export default defineContentScript({
       const change = changes[SETTINGS_KEY];
       if (area === 'local' && change?.newValue) player.setSettings(sanitizeSettings(change.newValue));
     });
+
+    // The equalizer is shared by all Icedrive tabs and survives reloads too.
+    const savedEq = await browser.storage.local.get(EQ_KEY);
+    engine.setSettings(sanitizeEq(savedEq[EQ_KEY]));
+    let lastSavedEq = '';
+    let saveTimer: ReturnType<typeof setTimeout> | undefined;
+    engine.onSettingsChange = (eq) => {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => {
+        lastSavedEq = JSON.stringify(eq);
+        void browser.storage.local.set({ [EQ_KEY]: eq });
+      }, EQ_SAVE_DELAY_MS);
+    };
+    browser.storage.onChanged.addListener((changes, area) => {
+      const change = changes[EQ_KEY];
+      if (area !== 'local' || !change?.newValue) return;
+      // Our own save coming back must not undo a slider that has moved on since.
+      if (JSON.stringify(change.newValue) === lastSavedEq) return;
+      engine.setSettings(sanitizeEq(change.newValue));
+    });
+    engine.watch();
+    setInterval(() => engine.sync(), EQ_SYNC_MS);
 
     mountInPageControls(player);
 
