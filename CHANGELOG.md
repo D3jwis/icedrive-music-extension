@@ -19,6 +19,7 @@ changes under **Unreleased** as you go and rename it when you tag.
 - **New popup layout**: a slimmer header; cover, title and folder in one box; times beside the seek bar; playback speed as a small chip next to the volume. The track list and the equalizer are now two tabs (remembered) sharing the space below, so the popup keeps the same height and the list no longer gets pushed out when the equalizer is open.
 - **Inside Icedrive**: shuffle, previous, next and repeat line up with Icedrive's player controls, with the mini player button at the end of the row. The equalizer and the track list are labelled tabs (click the open one to close it), and the list uses two columns when there is room.
 - The playing track shows small level bars instead of its number.
+- **One "deck" look**: the player (now playing, seek, buttons, volume) is one panel, and the tabs, track list, equalizer and visualizer strip share its surface, so nothing stands out on its own.
 
 ## [0.4.0] - 2026-11-09
 

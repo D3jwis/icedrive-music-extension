@@ -59,15 +59,13 @@ body.full #app {
   line-height: 1.4;
 }
 
-/* ---- Now playing box ---- */
-.np-box {
-  padding: 12px 12px 10px;
+/* ---- The player "deck": now playing, seek, transport and volume in one panel ---- */
+.player {
+  padding: 12px;
   border-radius: 12px;
-  background:
-    radial-gradient(220px 120px at 100% 0%, rgba(8, 200, 209, 0.14), transparent 70%),
-    linear-gradient(180deg, #1b2236, #151a2a);
-  border: 1px solid #2c3550;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 6px 18px rgba(0, 0, 0, 0.25);
+  background: var(--ice-deck-glow), var(--ice-deck-bg);
+  border: 1px solid var(--ice-deck-border);
+  box-shadow: var(--ice-deck-shadow);
 }
 .now {
   display: flex;
@@ -138,7 +136,7 @@ body.full #app {
   gap: 12px;
   margin-top: 10px;
   padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 /* A small glowing clock, like an old player's display. */
 .lcd {
@@ -175,7 +173,7 @@ body.full #app {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 12px;
   font-size: 11px;
   color: var(--ice-muted);
   font-variant-numeric: tabular-nums;
@@ -282,8 +280,9 @@ body.full #app {
   margin-top: 12px;
   padding: 3px;
   border-radius: 9px;
-  background: var(--ice-panel);
-  border: 1px solid var(--ice-panel-border);
+  background: var(--ice-deck-bg);
+  border: 1px solid var(--ice-deck-border);
+  box-shadow: var(--ice-deck-shadow);
 }
 .seg-btn {
   flex: 1;
@@ -323,7 +322,7 @@ body.full #app {
   color: var(--ice-accent);
 }
 .seg-btn[aria-selected='true'] {
-  background: var(--ice-bg);
+  background: #262e47;
   color: var(--ice-text);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
 }
@@ -526,7 +525,7 @@ body.detached .eq-panel .slot .range {
     align-items: center;
     column-gap: 8px;
   }
-  body.detached .np-box {
+  body.detached .player {
     padding: 0;
     border: 0;
     background: none;

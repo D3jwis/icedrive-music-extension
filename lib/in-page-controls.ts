@@ -22,16 +22,17 @@ const STYLE = `
   .bar .grow { flex: 1; }
   .viz-strip {
     margin: 12px 12px 0; padding: 8px 10px; border-radius: var(--ice-radius);
-    background: linear-gradient(180deg, #1b2236, #151a2a); border: 1px solid #2c3550;
+    background: var(--ice-deck-glow), var(--ice-deck-bg); border: 1px solid var(--ice-deck-border);
+    box-shadow: var(--ice-deck-shadow);
   }
   .viz-strip canvas { display: block; width: 100%; height: 40px; cursor: pointer; }
   .viz-strip.off canvas { height: 18px; }
   .ip-panel {
     margin: 12px 12px 4px; border-radius: var(--ice-radius);
-    background: var(--ice-panel); border: 1px solid var(--ice-panel-border);
+    background: var(--ice-deck-bg); border: 1px solid var(--ice-deck-border); box-shadow: var(--ice-deck-shadow);
   }
   .tabs { display: flex; gap: 2px; padding: 6px 6px 0; }
-  .ip-panel.open .tabs { border-bottom: 1px solid var(--ice-panel-border); }
+  .ip-panel.open .tabs { border-bottom: 1px solid var(--ice-deck-border); }
   .ip-panel:not(.open) .tabs { padding-bottom: 6px; }
   .tab {
     display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px;
@@ -43,13 +44,13 @@ const STYLE = `
   .tab small { font-weight: 500; font-size: 11px; color: var(--ice-dim); }
   .tab small.state { color: var(--ice-accent); }
   .tab[aria-selected='true'] {
-    color: var(--ice-text); background: var(--ice-panel);
-    border-color: var(--ice-panel-border); border-bottom-color: var(--ice-panel);
+    color: var(--ice-text); background: #1a2134;
+    border-color: var(--ice-deck-border); border-bottom-color: #1a2134;
     border-radius: 7px 7px 0 0; margin-bottom: -1px;
   }
   .tab[aria-selected='true'] svg { fill: var(--ice-accent); }
   /* Panels lose their own card frame: the tabbed box is the frame. */
-  .ip-panel .card { margin: 0; border: 0; background: transparent; }
+  .ip-panel .card { margin: 0; border: 0; background: transparent; box-shadow: none; }
   .eq-panel .switch-text { font-size: 0; }
   .eq-panel .switch-text::after { content: attr(data-short); font-size: 13px; }
   .eq-status[data-status='active'] { display: inline-flex; align-items: center; gap: 6px; }

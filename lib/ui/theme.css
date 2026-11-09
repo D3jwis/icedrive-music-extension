@@ -24,6 +24,12 @@
   --ice-radius-sm: 6px;
   --ice-knob: #ffffff;
   --ice-knob-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(13, 18, 32, 0.25);
+  /* The "deck" surface every panel shares: a soft top-to-bottom shade,
+     a slightly brighter edge and a faint highlight along the top. */
+  --ice-deck-bg: linear-gradient(180deg, #1b2236, #151a2a);
+  --ice-deck-glow: radial-gradient(260px 140px at 100% 0%, rgba(8, 200, 209, 0.1), transparent 70%);
+  --ice-deck-border: #2c3550;
+  --ice-deck-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 6px 18px rgba(0, 0, 0, 0.25);
   color-scheme: dark;
 }
 
@@ -35,8 +41,9 @@
 .card {
   padding: 12px;
   border-radius: var(--ice-radius);
-  background: var(--ice-panel);
-  border: 1px solid var(--ice-panel-border);
+  background: var(--ice-deck-bg);
+  border: 1px solid var(--ice-deck-border);
+  box-shadow: var(--ice-deck-shadow);
 }
 
 /* Round icon buttons (shuffle, previous, next, repeat...). */
