@@ -9,35 +9,30 @@ changes under **Unreleased** as you go and rename it when you tag.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-09
+
+A new look for the whole player, with a spectrum visualizer and a new icon. This release also includes everything from 0.4.0, which was withdrawn on the day it came out.
+
 ### Added
 
-- **Spectrum visualizer**: animated level bars with falling peak caps, in a new "now playing" box next to a small glowing clock, in the popup, the mini player and inside Icedrive. Click it to turn it off or on (shared everywhere). It uses the same audio processing as the equalizer, so it works on songs where the equalizer shows *Active*; with the visualizer on, songs go through that processing even when the equalizer is off (with a flat curve, so they sound the same).
+- **Spectrum visualizer**: animated level bars with falling peak caps, in a "now playing" box next to a small glowing clock, in the popup, the mini player and inside Icedrive. Click it to turn it off or on (shared everywhere). It uses the same audio processing as the equalizer, so it works on songs where the equalizer shows *Active*; with the visualizer on, songs go through that processing even when the equalizer is off (with a flat curve, so they sound the same).
+- **Full equalizer in the popup and mini player**: all 10 bands and the preamp, on its own tab next to the track list.
+- **Playback speed** in the popup and mini player (0.5× – 4×, a small chip next to the volume), the same speeds as Icedrive's own player. Icedrive remembers it for the next songs.
 - **Compact mini player**: make the mini player window short and it turns into a bar with the cover, title, buttons and seek bar.
 
 ### Changed
 
-- **New icon**: a white polar bear in headphones on the blue-to-turquoise tile, with the face and headphone outlines cut out so the background shows through (a nod to Icedrive's own bear).
-- **New popup layout**: cover, title and folder in one box with the clock (which replaces the times beside the seek bar); playback speed as a small chip next to the volume. The track list and the equalizer are now two tabs (remembered) sharing the space below, so the popup keeps the same height and the list no longer gets pushed out when the equalizer is open. A dot on the *Equalizer* tab shows it is on.
+- **Inside Icedrive, the same player as the popup**: the banner (with the mini player button) and the whole player (cover, clock, visualizer, seek bar, buttons, volume and speed) replace Icedrive's own cover, title and player bar, with the equalizer and the folder's track list side by side underneath. If the extension's player can't attach, Icedrive's own shows as before.
+- **New popup layout**: cover, title and folder in one box with the clock, which replaces the times beside the seek bar. The track list and the equalizer are two tabs (remembered) sharing the space below, so the popup keeps the same height and the list no longer gets pushed out. A dot on the *Equalizer* tab shows it is on.
+- **One look everywhere**: the popup, the mini player and the player inside Icedrive share one stylesheet and one "deck" surface, with Icedrive's navy/teal colours, rounded dark panels and white slider knobs. The popup no longer switches to a light theme.
 - **"Candy" accents**: the play button, the seek and volume fills and the on/off switches use the icon's glossy blue-to-turquoise gradient.
-- The banner shows the bear from the icon (without its tile) next to the name, with a scatter of sparkles.
-- **Inside Icedrive, the same player as the popup**: the banner (with the mini player button) and the whole deck (cover, clock, visualizer, seek bar, buttons, volume and speed) replace Icedrive's own cover, title and player bar, with the equalizer and the folder's track list side by side underneath. If the extension's player can't attach, Icedrive's own shows as before.
+- **New icon**: a white polar bear in headphones on the blue-to-turquoise tile, with the face and headphone outlines cut out so the background shows through (a nod to Icedrive's own bear). The banner shows the same bear, without its tile, next to the name, with a scatter of sparkles.
 - The playing track shows small level bars instead of its number.
-- **One "deck" look**: the player (now playing, seek, buttons, volume) is one panel, and the tabs, track list, equalizer and visualizer strip share its surface, so nothing stands out on its own.
+- Equalizer sliders fill from 0 dB, so boosts and cuts are visible at a glance, and *Reset* only shows when the curve isn't flat.
 
-## [0.4.0] - 2026-11-09
+## [0.4.0] - 2026-11-09 [YANKED]
 
-### Added
-
-- **Full equalizer in the popup and mini player**: all 10 bands and the preamp, folded away by default (the arrow next to *Reset* unfolds it; remembered).
-- **Playback speed** in the popup and mini player (0.5× – 4×, next to the volume), the same speeds as Icedrive's own player. Icedrive remembers it for the next songs.
-
-### Changed
-
-- **One look everywhere**: the popup, the mini player and the controls inside Icedrive share one stylesheet, with Icedrive's rounded dark panels, its navy/teal colours and white slider knobs like Icedrive's player. The popup no longer switches to a light theme.
-- Equalizer sliders fill from 0 dB, so boosts and cuts are visible at a glance.
-- *Reset* only shows when the equalizer curve isn't flat (and, in the popup, when the bands are unfolded).
-- Track numbers line up with the folder icon above the list.
-- The play/pause button's icon is white, like the slider knobs.
+Withdrawn on release day because of a mini player layout bug. Its changes ship in 0.5.0.
 
 ## [0.3.0] - 2026-11-09
 
@@ -110,8 +105,8 @@ First public release for Chrome and Brave.
 - Release zips ship with SHA-256 checksums and a signed build provenance attestation.
 - See [SECURITY.md](SECURITY.md) and the [work laptop guide](docs/enterprise-install.md).
 
-[Unreleased]: https://github.com/D3jwis/icedrive-music-extension/compare/v0.4.0...HEAD
-[0.4.0]: https://github.com/D3jwis/icedrive-music-extension/compare/v0.3.0...v0.4.0
+[Unreleased]: https://github.com/D3jwis/icedrive-music-extension/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/D3jwis/icedrive-music-extension/compare/v0.3.0...v0.5.0
 [0.3.0]: https://github.com/D3jwis/icedrive-music-extension/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/D3jwis/icedrive-music-extension/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/D3jwis/icedrive-music-extension/compare/v0.1.1...v0.1.2
