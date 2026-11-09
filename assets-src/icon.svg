@@ -8,8 +8,8 @@
     <mask id="m" maskUnits="userSpaceOnUse" x="0" y="0" width="128" height="128">
       <g transform="translate(0 7)">
       <!-- ears (inner ear cut out) -->
-      <circle cx="33" cy="33" r="12" fill="white"/><circle cx="33" cy="34" r="5" fill="black"/>
-      <circle cx="95" cy="33" r="12" fill="white"/><circle cx="95" cy="34" r="5" fill="black"/>
+      <circle cx="29" cy="31" r="12" fill="white"/><circle cx="29" cy="32" r="5" fill="black"/>
+      <circle cx="99" cy="31" r="12" fill="white"/><circle cx="99" cy="32" r="5" fill="black"/>
       <!-- head, separated from ears and chest by a background-coloured gap -->
       <path d="M64 25 C 87 25, 101 37, 103 53 C 109 59, 111 69, 105 75 C 108 84, 99 92, 90 94 C 82 102, 46 102, 38 94 C 29 92, 20 84, 23 75 C 17 69, 19 59, 25 53 C 27 37, 41 25, 64 25 Z" fill="white" stroke="black" stroke-width="6"/>
       <path d="M64 25 C 87 25, 101 37, 103 53 C 109 59, 111 69, 105 75 C 108 84, 99 92, 90 94 C 82 102, 46 102, 38 94 C 29 92, 20 84, 23 75 C 17 69, 19 59, 25 53 C 27 37, 41 25, 64 25 Z" fill="white"/>
@@ -17,14 +17,16 @@
       <path d="M54 68 C 54 62, 74 62, 74 68 C 74 74, 67 78, 64 78 C 61 78, 54 74, 54 68 Z" fill="black"/>
       <path d="M64 78 v4 M56 85 q8 4 16 0 M42 58 q6.5 4 13 0 M73 58 q6.5 4 13 0" fill="none" stroke="black" stroke-width="3" stroke-linecap="round"/>
       <!-- headphones: same colour, outlined by gaps -->
-      <path d="M21 54 C 19 18, 109 18, 107 54" fill="none" stroke="black" stroke-width="12" stroke-linecap="round"/>
-      <path d="M21 54 C 19 18, 109 18, 107 54" fill="none" stroke="white" stroke-width="6" stroke-linecap="round"/>
-      <rect x="6.0" y="36.0" width="30" height="44" rx="14.0" fill="black"/>
-      <rect x="9.0" y="39.0" width="24" height="38" rx="11.0" fill="white"/>
-      <path d="M17 48 q-5 10 0 20" fill="none" stroke="black" stroke-width="3" stroke-linecap="round"/>
-      <rect x="92.0" y="36.0" width="30" height="44" rx="14.0" fill="black"/>
-      <rect x="95.0" y="39.0" width="24" height="38" rx="11.0" fill="white"/>
-      <path d="M111 48 q5 10 0 20" fill="none" stroke="black" stroke-width="3" stroke-linecap="round"/>
+      <path d="M25.6 45.3 C 34 2, 94 2, 102.4 45.3" fill="none" stroke="black" stroke-width="12" stroke-linecap="round"/>
+      <path d="M25.6 45.3 C 34 2, 94 2, 102.4 45.3" fill="none" stroke="white" stroke-width="6" stroke-linecap="round"/>
+      <g transform="rotate(15 23 55)">
+      <rect x="8" y="33" width="30" height="44" rx="14" fill="black"/>
+      <rect x="11" y="36" width="24" height="38" rx="11" fill="white"/>
+      <path d="M19 45 q-5 10 0 20" fill="none" stroke="black" stroke-width="3" stroke-linecap="round"/></g>
+      <g transform="rotate(-15 105 55)">
+      <rect x="90" y="33" width="30" height="44" rx="14" fill="black"/>
+      <rect x="93" y="36" width="24" height="38" rx="11" fill="white"/>
+      <path d="M109 45 q5 10 0 20" fill="none" stroke="black" stroke-width="3" stroke-linecap="round"/></g>
       </g>
     </mask>
     <mask id="clip"><rect x="4" y="4" width="120" height="120" rx="28" fill="white"/></mask>
