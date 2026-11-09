@@ -1,4 +1,6 @@
 import type { NowPlaying, TrackRef } from './icedrive-dom';
+import type { EqStatus } from './audio-engine';
+import type { EqSettings } from './equalizer';
 import type { PlaybackSettings } from './queue';
 
 /** Snapshot of the player, sent from the content script to the popup. */
@@ -18,6 +20,11 @@ export interface PlayerState {
   settings: PlaybackSettings;
   /** Whether "next" has somewhere to go with the current shuffle/repeat settings. */
   hasNext: boolean;
+  /** Volume of Icedrive's player, 0..1. */
+  volume: number;
+  muted: boolean;
+  eq: EqSettings;
+  eqStatus: EqStatus;
 }
 
 /** Messages the popup sends to the content script via browser.tabs.sendMessage. */
@@ -31,6 +38,13 @@ export type PlayerCommand =
   | { type: 'toggleShuffle' }
   /** off -> all -> one -> off */
   | { type: 'cycleRepeat' }
+  /** 0..1 */
+  | { type: 'setVolume'; volume: number }
+  | { type: 'toggleMute' }
+  /** Changes any of the equalizer settings; the rest stay as they are. */
+  | { type: 'setEq'; eq: Partial<EqSettings> }
+  /** Loads a built-in preset's curve. */
+  | { type: 'eqPreset'; preset: string }
   /** Album art as a data: URL (the page's blob: URL can't be shown in the popup). */
   | { type: 'getArt' };
 
@@ -51,3 +65,6 @@ export interface BridgeOpenFile {
   id: string;
   area: string;
 }
+
+/** Messages a content script sends to the background service worker. */
+export type BackgroundRequest = { type: 'openMiniPlayer' };

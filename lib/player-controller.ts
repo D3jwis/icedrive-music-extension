@@ -7,6 +7,8 @@ import {
   readNowPlaying,
   type TrackRef,
 } from './icedrive-dom';
+import type { AudioEngine } from './audio-engine';
+import { applyPreset, CUSTOM_PRESET, DEFAULT_EQ, type EqSettings } from './equalizer';
 import { BRIDGE_EVENT, type BridgeOpenFile, type PlayerCommand, type PlayerState } from './messages';
 import { DEFAULT_SETTINGS, nextRepeatMode, PlayQueue, type PlaybackSettings } from './queue';
 import { isArea, isFileId } from './validate';
@@ -28,6 +30,8 @@ export class PlayerController {
   constructor(
     private readonly doc: Document = document,
     random: () => number = Math.random,
+    /** Equalizer; without one, equalizer commands do nothing. */
+    readonly engine: AudioEngine | null = null,
   ) {
     this.queue = new PlayQueue(random);
   }
@@ -59,6 +63,10 @@ export class PlayerController {
       currentIndex,
       settings: this.getSettings(),
       hasNext: active && this.queue.hasNext(currentId, this.settings),
+      volume: audio?.volume ?? 1,
+      muted: audio?.muted ?? false,
+      eq: this.engine?.getSettings() ?? { ...DEFAULT_EQ, gains: [...DEFAULT_EQ.gains] },
+      eqStatus: this.engine?.getStatus() ?? 'off',
     };
   }
 
@@ -116,6 +124,35 @@ export class PlayerController {
     this.onSettingsChange?.(this.getSettings());
   }
 
+  /**
+   * Sets the volume of Icedrive's own player (0..1). Its volume slider
+   * follows, and Icedrive remembers the value like when you use its slider.
+   */
+  setVolume(volume: number): void {
+    const audio = findAudio(this.doc);
+    if (!audio || !Number.isFinite(volume)) return;
+    audio.volume = Math.min(1, Math.max(0, volume));
+    if (audio.volume > 0) audio.muted = false;
+  }
+
+  toggleMute(): void {
+    const audio = findAudio(this.doc);
+    if (audio) audio.muted = !audio.muted;
+  }
+
+  /** Changes some equalizer settings. Moving the curve by hand makes the preset "custom". */
+  updateEq(patch: Partial<EqSettings>): void {
+    if (!this.engine) return;
+    const next = { ...this.engine.getSettings(), ...patch };
+    if ((patch.gains || patch.preamp !== undefined) && patch.preset === undefined) next.preset = CUSTOM_PRESET;
+    this.engine.update(next);
+  }
+
+  applyEqPreset(preset: string): void {
+    if (!this.engine) return;
+    this.engine.update(applyPreset(this.engine.getSettings(), preset));
+  }
+
   playTrack(id: string): void {
     const track = listTracks(this.doc).find((t) => t.id === id);
     if (track) this.open(track);
@@ -143,6 +180,18 @@ export class PlayerController {
         break;
       case 'cycleRepeat':
         this.cycleRepeat();
+        break;
+      case 'setVolume':
+        this.setVolume(cmd.volume);
+        break;
+      case 'toggleMute':
+        this.toggleMute();
+        break;
+      case 'setEq':
+        this.updateEq(cmd.eq);
+        break;
+      case 'eqPreset':
+        this.applyEqPreset(cmd.preset);
         break;
       case 'getState':
       case 'getArt':

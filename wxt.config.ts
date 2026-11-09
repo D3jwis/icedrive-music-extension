@@ -25,7 +25,7 @@ export default defineConfig({
   manifest: ({ command }) => ({
     name: 'Icedrive Music Player+',
     description:
-      'Extends the music player in Icedrive: track info, seeking, next/previous, shuffle and repeat.',
+      'Extends the music player in Icedrive: track info, seeking, next/previous, shuffle, repeat, volume and a 10-band equalizer.',
     // Security: keep this list minimal. Any change here must also be made in
     // scripts/verify-build.mjs, which fails the build on unexpected permissions.
     host_permissions: ['https://icedrive.net/*'],

@@ -9,6 +9,12 @@ changes under **Unreleased** as you go and rename it when you tag.
 
 ## [Unreleased]
 
+### Added
+
+- **Equalizer**: 10 bands (32 Hz – 16 kHz), preamp, 17 presets and a limiter against clipping. On/off and presets in the popup; the full equalizer in Icedrive's player. Settings are shared by all Icedrive tabs and remembered.
+- **Volume slider and mute** in the popup and mini player, synced with Icedrive's own volume.
+- **Track list and mini player button inside Icedrive**, so every option is available right under Icedrive's player without opening the popup.
+
 ## [0.2.0] - 2026-11-05
 
 ### Added
