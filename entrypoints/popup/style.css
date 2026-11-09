@@ -1,31 +1,8 @@
-/* Colours follow Icedrive's own player (teal #17a1a2 on navy #202639). */
-:root {
-  --bg: #ffffff;
-  --surface: #f2f4f8;
-  --text: #1b2033;
-  --muted: #6b7289;
-  --accent: #128a8b;
-  --accent-text: #ffffff;
-  --track: #d9dde7;
-  --hover: #e6eaf2;
-  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
-  color-scheme: light;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #171b2a;
-    --surface: #202639;
-    --text: #e9ecf5;
-    --muted: #8f97ad;
-    --accent: #17a1a2;
-    --accent-text: #0d1220;
-    --track: #313953;
-    --hover: #2a3148;
-    color-scheme: dark;
-  }
-}
-
+/*
+ * Popup and mini player. Shared colours, cards, sliders, the equalizer and
+ * the track list come from lib/ui/theme.css (also used inside Icedrive's
+ * player); this file only lays out the popup.
+ */
 * {
   box-sizing: border-box;
 }
@@ -33,28 +10,36 @@
 body {
   margin: 0;
   width: 340px;
-  background: var(--bg);
-  color: var(--text);
-  font-size: 13px;
+  background: var(--ice-bg);
+  color: var(--ice-text);
+  font: 13px/1.3 system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
+/* The banner stays put; only the content below it scrolls. Chrome caps
+   popups at 600 px, so the popup never scrolls as a whole. */
 #app {
+  display: flex;
+  flex-direction: column;
+  max-height: 600px;
+}
+.head {
+  flex: none;
+}
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   padding: 14px;
-}
-
-[hidden] {
-  display: none !important;
-}
-
-.muted {
-  color: var(--muted);
 }
 
 /* Empty / not-connected state */
 .empty {
   text-align: center;
   padding: 24px 8px;
-  color: var(--muted);
+  color: var(--ice-muted);
 }
 .empty-icon {
   width: 36px;
@@ -67,7 +52,7 @@ body {
   line-height: 1.4;
 }
 
-/* Now playing */
+/* Now playing, laid out like Icedrive's audio card: art left, text right. */
 .now {
   display: flex;
   gap: 12px;
@@ -77,15 +62,15 @@ body {
   flex: none;
   width: 76px;
   height: 76px;
-  border-radius: 8px;
-  background: var(--surface) center / cover no-repeat;
+  border-radius: 4px;
+  background: #1b2031 center / cover no-repeat;
   display: grid;
   place-items: center;
 }
 .art svg {
   width: 30px;
   height: 30px;
-  fill: var(--muted);
+  fill: #4a5464;
 }
 .art.has-image svg {
   display: none;
@@ -97,6 +82,7 @@ body {
   font-size: 15px;
   font-weight: 600;
   line-height: 1.3;
+  color: var(--ice-text);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -104,7 +90,7 @@ body {
 }
 .artist {
   margin-top: 2px;
-  color: var(--muted);
+  color: var(--ice-text-2);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -112,123 +98,56 @@ body {
 .position {
   margin-top: 4px;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ice-muted);
 }
 
-/* Seek bar */
-.transport {
+.seek {
   margin-top: 14px;
-}
-.range {
-  --pct: 0%;
-  width: 100%;
-  min-width: 0;
-  height: 16px;
-  margin: 0;
-  background: transparent;
-  appearance: none;
-  cursor: pointer;
-}
-.range::-webkit-slider-runnable-track {
-  height: 4px;
-  border-radius: 2px;
-  background: linear-gradient(to right, var(--accent) var(--pct), var(--track) var(--pct));
-}
-.range::-webkit-slider-thumb {
-  appearance: none;
-  width: 12px;
-  height: 12px;
-  margin-top: -4px;
-  border-radius: 50%;
-  background: var(--accent);
-}
-.range::-moz-range-track {
-  height: 4px;
-  border-radius: 2px;
-  background: var(--track);
-}
-.range::-moz-range-progress {
-  height: 4px;
-  border-radius: 2px;
-  background: var(--accent);
-}
-.range::-moz-range-thumb {
-  width: 12px;
-  height: 12px;
-  border: 0;
-  border-radius: 50%;
-  background: var(--accent);
 }
 .times {
   display: flex;
   justify-content: space-between;
   font-size: 11px;
-  color: var(--muted);
+  color: var(--ice-muted);
   font-variant-numeric: tabular-nums;
 }
 
-/* Buttons */
 .controls {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 12px;
-  margin-top: 6px;
+  margin-top: 4px;
 }
-.btn {
-  width: 38px;
-  height: 38px;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--text);
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-}
-.btn svg {
-  width: 22px;
-  height: 22px;
-  fill: currentColor;
-}
-.btn:hover {
-  background: var(--hover);
-}
-.btn:focus-visible,
-.queue button:focus-visible,
-.range:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-.btn-main {
+.ib.main {
   width: 48px;
   height: 48px;
-  background: var(--accent);
-  color: var(--accent-text);
+  background: var(--ice-accent);
+  color: var(--ice-on-accent);
 }
-.btn-main:hover {
-  background: var(--accent);
+.ib.main:hover {
+  background: var(--ice-accent);
+  color: var(--ice-on-accent);
   filter: brightness(1.1);
 }
-.btn-main svg {
+.ib.main svg {
   width: 26px;
   height: 26px;
 }
 
-/* Volume and equalizer */
-.extras {
+.volume {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 8px;
+  margin-top: 6px;
 }
-.btn-small {
+.ib.small {
   flex: none;
   width: 30px;
   height: 30px;
-  color: var(--muted);
+  color: var(--ice-text-2);
 }
-.btn-small svg {
+.ib.small svg {
   width: 18px;
   height: 18px;
 }
@@ -237,201 +156,57 @@ body {
   width: 34px;
   text-align: right;
   font-size: 11px;
-  color: var(--muted);
+  color: var(--ice-muted);
   font-variant-numeric: tabular-nums;
 }
-.eq-row {
-  display: flex;
-  align-items: center;
+
+/* Equalizer card: the bands fold away so the popup stays short. */
+.eq-panel .eq-head {
   gap: 8px;
-  margin-top: 6px;
-  padding-left: 4px;
 }
-.eq-switch {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 600;
-  cursor: pointer;
+/* "EQ" instead of "Equalizer", so the header fits one line. */
+.eq-panel .switch-text {
+  font-size: 0;
 }
-.eq-switch input {
-  appearance: none;
-  margin: 0;
+.eq-panel .switch-text::after {
+  content: attr(data-short);
+  font-size: 13px;
+}
+.eq-panel .eq-head .select {
+  flex: 1 1 100px;
+}
+.eq-panel .eq-head .grow {
+  display: none;
+}
+.eq-panel .eq-status {
+  order: 10;
+  flex-basis: 100%;
+}
+/* The popup has no room for "Active"; only problems and progress are shown. */
+.eq-panel .eq-status:empty,
+.eq-panel .eq-status[data-status='active'] {
+  display: none;
+}
+.eq-panel.folded .bands,
+.eq-panel.folded [data-eq='reset'] {
+  display: none;
+}
+.fold-btn {
+  flex: none;
   width: 28px;
-  height: 16px;
-  border-radius: 8px;
-  background: var(--track);
-  position: relative;
-  cursor: pointer;
+  height: 28px;
 }
-.eq-switch input::after {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--bg);
+.fold-btn svg {
+  width: 20px;
+  height: 20px;
   transition: transform 0.15s;
 }
-.eq-switch input:checked {
-  background: var(--accent);
-}
-.eq-switch input:checked::after {
-  transform: translateX(12px);
-}
-.eq-switch input:focus-visible,
-#eq-preset:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-#eq-preset {
-  flex: 1;
-  min-width: 0;
-  font: inherit;
-  font-size: 12px;
-  color: var(--text);
-  background: var(--surface);
-  border: 1px solid var(--track);
-  border-radius: 6px;
-  padding: 3px 4px;
-}
-.eq-status {
-  font-size: 11px;
-  color: var(--muted);
-  margin: 4px 0 0 4px;
-  min-height: 0;
-}
-.eq-status.warn {
-  color: #c48a12;
+.eq-panel:not(.folded) .fold-btn svg {
+  transform: rotate(180deg);
 }
 
-/* Queue */
-.queue-wrap {
-  margin-top: 14px;
-  border-top: 1px solid var(--track);
-  padding-top: 10px;
-}
-.queue-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-.queue-head .muted {
-  flex: none;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-}
-.folder {
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.folder svg {
-  flex: none;
-  width: 15px;
-  height: 15px;
-  fill: var(--accent);
-}
-#folder-name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.queue {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  max-height: 230px;
-  overflow-y: auto;
-  padding-right: 2px;
-}
-.queue button {
-  width: 100%;
-  display: flex;
-  gap: 8px;
-  align-items: baseline;
-  padding: 6px 8px;
-  border: 0;
-  border-radius: 6px;
-  background: transparent;
-  color: var(--text);
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-}
-.queue button:hover {
-  background: var(--hover);
-}
-.queue .num {
-  flex: none;
-  width: 22px;
-  text-align: right;
-  color: var(--muted);
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
-}
-.queue .name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.queue .current button {
-  background: var(--surface);
-  color: var(--accent);
-  font-weight: 600;
-}
-.queue .current .num {
-  color: var(--accent);
-}
-.btn:disabled {
-  opacity: 0.35;
-  cursor: default;
-  background: transparent;
-}
-
-/* Shuffle / repeat toggles */
-.btn-toggle {
-  position: relative;
-  color: var(--muted);
-}
-.btn-toggle svg {
-  width: 19px;
-  height: 19px;
-}
-.btn-toggle[aria-pressed='true'] {
-  color: var(--accent);
-}
-.btn-toggle[aria-pressed='true']::after {
-  content: '';
-  position: absolute;
-  bottom: 3px;
-  left: 50%;
-  width: 4px;
-  height: 4px;
-  margin-left: -2px;
-  border-radius: 50%;
-  background: currentColor;
-}
-.badge {
-  position: absolute;
-  top: 5px;
-  right: 4px;
-  min-width: 12px;
-  height: 12px;
-  border-radius: 6px;
-  background: var(--accent);
-  color: var(--accent-text);
-  font-size: 9px;
-  font-weight: 700;
-  line-height: 12px;
-  text-align: center;
+.tracks {
+  max-height: 184px;
 }
 
 /* Banner at the top: the extension's icon and name on its blue tile colours. */
@@ -440,7 +215,7 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: -14px -14px 14px;
+  margin: 0;
   padding: 11px 10px 11px 14px;
   color: #fff;
   overflow: hidden;
@@ -519,18 +294,6 @@ body {
 }
 
 /* Scrollbars styled like Icedrive's file list (.window-content-scrollbar). */
-:root {
-  --scroll-thumb: #bcc6d6;
-  --scroll-thumb-hover: #253775;
-  --scroll-track: #fafafb;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --scroll-thumb: #304771;
-    --scroll-thumb-hover: #04e3d1;
-    --scroll-track: #131726;
-  }
-}
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -540,29 +303,27 @@ body {
   height: 0;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--scroll-thumb);
+  background: #304771;
   border-radius: 1px;
 }
 ::-webkit-scrollbar-thumb:hover,
 ::-webkit-scrollbar-thumb:active {
-  background: var(--scroll-thumb-hover);
+  background: #04e3d1;
 }
 ::-webkit-scrollbar-track {
-  background: var(--scroll-track);
+  background: #131726;
 }
 ::-webkit-scrollbar-corner {
   background: transparent;
 }
-/* Firefox has no ::-webkit-scrollbar. (In Chrome, scrollbar-color would
-   override the rules above, so it is only set where they don't exist.) */
 @supports not selector(::-webkit-scrollbar) {
   * {
     scrollbar-width: thin;
-    scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+    scrollbar-color: #304771 #131726;
   }
 }
 
-/* Detached window: fill the window and let the queue use the spare height. */
+/* Detached window: fill the window and let the track list use the spare height. */
 body.detached {
   width: auto;
   min-width: 300px;
@@ -570,16 +331,27 @@ body.detached {
 }
 body.detached #app {
   height: 100%;
-  display: flex;
-  flex-direction: column;
+  max-height: none;
 }
-body.detached .queue-wrap {
+body.detached .body {
+  flex: 1;
+  min-height: 0;
+}
+body.detached #tracks-slot {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+body.detached #tracks-slot[hidden] {
+  display: none;
+}
+body.detached .track-panel {
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
 }
-body.detached .queue {
+body.detached .tracks {
   flex: 1;
   max-height: none;
 }

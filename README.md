@@ -44,6 +44,12 @@
   </tr>
   <tr>
     <td align="center" colspan="2">
+      <img src="docs/images/popup-equalizer.png" alt="Popup with the 10-band equalizer unfolded" width="300"><br>
+      <sub><b>Equalizer</b>: all 10 bands, preamp and presets, also in the popup and mini player</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2">
       <img src="docs/images/in-page-controls.png" alt="Shuffle, previous, next and repeat buttons and a 10-band equalizer added under Icedrive's player" width="640"><br>
       <sub><b>Inside Icedrive</b>: controls, equalizer and track list under the built-in player</sub>
     </td>
@@ -77,7 +83,7 @@ npm run build
 
 ### Equalizer
 
-Turn it on with the switch, then pick a preset or drag the bands. Lower the **Pre** (preamp) slider when you boost a lot, so loud songs stay clean. The popup has the on/off switch and the presets; all bands are in Icedrive's player.
+Turn it on with the switch, then pick a preset or drag the bands. Lower the **Pre** (preamp) slider when you boost a lot, so loud songs stay clean. The popup and mini player have the same equalizer: click the arrow next to *Reset* to unfold all bands.
 
 Icedrive streams songs from its download servers. To run them through the equalizer, the extension asks the browser to load the song in CORS mode, which restarts it at the same spot once (a split second). If Icedrive's server ever refuses that for a file, the song just plays as before without the equalizer, and the panel says so.
 
