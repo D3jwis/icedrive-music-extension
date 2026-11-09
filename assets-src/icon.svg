@@ -1,25 +1,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-  <!-- Palette taken from the Icedrive logo: blue #1463ce -> cyan #08c8d1, white "ice" shapes -->
+  <!-- Polar bear with headphones. Face details and headphone outlines are cut out of the
+       white shape (mask), so the Icedrive-style blue -> cyan background shows through. -->
   <defs>
-    <linearGradient id="bg" x1="0" y1="1" x2="1" y2="0">
-      <stop offset="0" stop-color="#1459c4"/>
-      <stop offset="0.55" stop-color="#1490d6"/>
-      <stop offset="1" stop-color="#08c8d1"/>
-    </linearGradient>
-    <linearGradient id="ice" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ffffff"/>
-      <stop offset="1" stop-color="#d9f3fb"/>
-    </linearGradient>
+    <linearGradient id="bg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#1459c4"/><stop offset=".55" stop-color="#1490d6"/><stop offset="1" stop-color="#08c8d1"/></linearGradient>
+    <linearGradient id="fur" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".7" stop-color="#f2fbfe"/><stop offset="1" stop-color="#d3f0fa"/></linearGradient>
+    <linearGradient id="hp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4f3fc"/><stop offset="1" stop-color="#9edcf2"/></linearGradient>
+    <mask id="m" maskUnits="userSpaceOnUse" x="0" y="0" width="128" height="128">
+      <g transform="translate(0 7)">
+      <!-- ears (inner ear cut out) -->
+      <circle cx="33" cy="33" r="12" fill="white"/><circle cx="33" cy="34" r="5" fill="black"/>
+      <circle cx="95" cy="33" r="12" fill="white"/><circle cx="95" cy="34" r="5" fill="black"/>
+      <!-- head, separated from ears and chest by a background-coloured gap -->
+      <path d="M64 25 C 87 25, 101 37, 103 53 C 109 59, 111 69, 105 75 C 108 84, 99 92, 90 94 C 82 102, 46 102, 38 94 C 29 92, 20 84, 23 75 C 17 69, 19 59, 25 53 C 27 37, 41 25, 64 25 Z" fill="white" stroke="black" stroke-width="6"/>
+      <path d="M64 25 C 87 25, 101 37, 103 53 C 109 59, 111 69, 105 75 C 108 84, 99 92, 90 94 C 82 102, 46 102, 38 94 C 29 92, 20 84, 23 75 C 17 69, 19 59, 25 53 C 27 37, 41 25, 64 25 Z" fill="white"/>
+      <!-- face cut-outs -->
+      <path d="M54 68 C 54 62, 74 62, 74 68 C 74 74, 67 78, 64 78 C 61 78, 54 74, 54 68 Z" fill="black"/>
+      <path d="M64 78 v4 M56 85 q8 4 16 0 M42 58 q6.5 4 13 0 M73 58 q6.5 4 13 0" fill="none" stroke="black" stroke-width="3" stroke-linecap="round"/>
+      <!-- headphones: same colour, outlined by gaps -->
+      <path d="M21 54 C 19 18, 109 18, 107 54" fill="none" stroke="black" stroke-width="12" stroke-linecap="round"/>
+      <path d="M21 54 C 19 18, 109 18, 107 54" fill="none" stroke="white" stroke-width="6" stroke-linecap="round"/>
+      <rect x="6.0" y="36.0" width="30" height="44" rx="14.0" fill="black"/>
+      <rect x="9.0" y="39.0" width="24" height="38" rx="11.0" fill="white"/>
+      <path d="M17 48 q-5 10 0 20" fill="none" stroke="black" stroke-width="3" stroke-linecap="round"/>
+      <rect x="92.0" y="36.0" width="30" height="44" rx="14.0" fill="black"/>
+      <rect x="95.0" y="39.0" width="24" height="38" rx="11.0" fill="white"/>
+      <path d="M111 48 q5 10 0 20" fill="none" stroke="black" stroke-width="3" stroke-linecap="round"/>
+      </g>
+    </mask>
+    <mask id="clip"><rect x="4" y="4" width="120" height="120" rx="28" fill="white"/></mask>
   </defs>
   <rect x="4" y="4" width="120" height="120" rx="28" fill="url(#bg)"/>
-  <!-- stem + flag -->
-  <path d="M64 28 h11 c2 12 10 18 20 23 c8 4 12 12 9 22 c-2-8-8-12-18-14 c-4-1-8-2-11-4 v45 h-11z" fill="url(#ice)"/>
-  <!-- ice-cube note head -->
-  <g transform="translate(52 96)">
-    <polygon points="0,-22 19,-11 19,11 0,22 -19,11 -19,-11" fill="#ffffff"/>
-    <polygon points="0,0 -19,-11 -19,11 0,22" fill="#bfe9f7"/>
-    <polygon points="0,0 19,-11 19,11 0,22" fill="#7fd0ee"/>
+  <g mask="url(#clip)"><rect width="128" height="128" fill="url(#fur)" mask="url(#m)"/>
   </g>
-  <!-- sparkle -->
-  <path d="M32 26 l3 9 9 3 -9 3 -3 9 -3-9 -9-3 9-3z" fill="#ffffff"/>
 </svg>
