@@ -106,6 +106,12 @@ describe('volume and equalizer through the controller', () => {
     expect(player.getState()).toMatchObject({ muted: true });
   });
 
+  it('sets the playback speed on the audio element', () => {
+    const player = new PlayerController(document);
+    expect(player.handle({ type: 'setSpeed', speed: 1.5 })).toMatchObject({ speed: 1.5 });
+    expect(audio().playbackRate).toBe(1.5);
+  });
+
   it('marks the preset custom when a band is moved and saves changes', () => {
     const engine = new AudioEngine(document, { createContext: () => fakeContext() as unknown as AudioContext, probeCors: async () => false });
     const saved = vi.fn();

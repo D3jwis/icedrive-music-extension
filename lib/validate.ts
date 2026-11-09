@@ -9,6 +9,7 @@
 import type { ArtResponse, BackgroundRequest, BridgeOpenFile, PlayerCommand } from './messages';
 import { clampDb, cloneEq, DEFAULT_EQ, EQ_BANDS, isPresetId, CUSTOM_PRESET, type EqSettings } from './equalizer';
 import { DEFAULT_SETTINGS, type PlaybackSettings, type RepeatMode } from './queue';
+import { isPlaybackSpeed } from './speed';
 
 /** Icedrive item ids look like "file-3857256753". */
 const FILE_ID = /^file-\d{1,20}$/;
@@ -70,6 +71,8 @@ export function parseCommand(value: unknown): PlayerCommand | null {
       return typeof value.volume === 'number' && value.volume >= 0 && value.volume <= 1
         ? { type: 'setVolume', volume: value.volume }
         : null;
+    case 'setSpeed':
+      return isPlaybackSpeed(value.speed) ? { type: 'setSpeed', speed: value.speed } : null;
     case 'eqPreset':
       return isPresetId(value.preset) ? { type: 'eqPreset', preset: value.preset } : null;
     case 'setEq': {

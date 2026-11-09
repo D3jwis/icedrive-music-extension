@@ -28,7 +28,7 @@ body {
 .body {
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
+  overflow: hidden auto;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -119,15 +119,16 @@ body {
   gap: 12px;
   margin-top: 4px;
 }
+/* White icon, like the slider knobs and Icedrive's own play button. */
 .ib.main {
   width: 48px;
   height: 48px;
   background: var(--ice-accent);
-  color: var(--ice-on-accent);
+  color: var(--ice-knob);
 }
 .ib.main:hover {
   background: var(--ice-accent);
-  color: var(--ice-on-accent);
+  color: var(--ice-knob);
   filter: brightness(1.1);
 }
 .ib.main svg {
@@ -150,6 +151,13 @@ body {
 .ib.small svg {
   width: 18px;
   height: 18px;
+}
+.speed {
+  flex: none;
+  padding: 3px 2px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
 }
 .pct {
   flex: none;
@@ -347,6 +355,9 @@ body.detached #tracks-slot[hidden] {
 }
 body.detached .track-panel {
   flex: 1;
+  /* Without this the flex row grows to fit the longest track name and the
+     whole window scrolls sideways. */
+  min-width: 0;
   min-height: 0;
   display: flex;
   flex-direction: column;

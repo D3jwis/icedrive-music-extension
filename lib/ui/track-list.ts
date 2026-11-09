@@ -21,6 +21,18 @@ export function buildTrackList(doc: Document): HTMLElement {
 }
 
 /**
+ * Scrolls only the list, and only vertically, until the row is visible.
+ * (scrollIntoView would also scroll every scrollable parent, including
+ * Icedrive's page and, sideways, the popup.)
+ */
+function scrollIntoList(list: HTMLElement, row: HTMLElement) {
+  const top = row.getBoundingClientRect().top - list.getBoundingClientRect().top + list.scrollTop;
+  if (top < list.scrollTop) list.scrollTop = top;
+  else if (top + row.offsetHeight > list.scrollTop + list.clientHeight)
+    list.scrollTop = top + row.offsetHeight - list.clientHeight;
+}
+
+/**
  * Keeps a track list up to date. Rebuilds the rows only when the folder
  * changes, and scrolls the playing song into view when it changes.
  */
@@ -60,7 +72,8 @@ export function createTrackListRenderer(panel: HTMLElement) {
       const li = list.children[currentIndex];
       if (li) {
         li.classList.add('current');
-        if (scroll) li.scrollIntoView({ block: 'nearest' });
+        // After this frame's layout, once the rest of the window has been updated too.
+        if (scroll) requestAnimationFrame(() => scrollIntoList(list, li as HTMLElement));
       }
       current = currentIndex;
     }

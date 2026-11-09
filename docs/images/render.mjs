@@ -59,6 +59,7 @@ const STATE = {
   hasNext: true,
   volume: 0.8,
   muted: false,
+  speed: 1,
   eq: { enabled: true, preset: 'bassBoost', preamp: -5, gains: [6, 5, 4, 2, 0, 0, 0, 0, 0, 0] },
   eqStatus: 'active',
 };
