@@ -68,7 +68,7 @@ upload always needs a higher version in `package.json`.
 
 **Summary** (max 132 characters):
 
-> Adds next/previous, shuffle, repeat, a queue, media keys and a mini player to the Icedrive web music player.
+> Adds a 10-band equalizer, volume, next/previous, shuffle, repeat, a queue and a mini player to the Icedrive web music player.
 
 **Category:** Tools (or Entertainment). **Language:** English.
 
@@ -81,11 +81,13 @@ Open a folder of songs on Icedrive, press play, and you get:
 
 • Now playing: title, artist, album art and the track's position in the folder
 • Seek bar to scrub anywhere in the track
+• 10-band equalizer with preamp and 17 presets (bass boost, vocal, rock, podcast, laptop speakers and more)
+• Volume slider and mute
 • Queue of every audio file in the folder, in Icedrive's order, with the folder's name. Click one to play it
 • Auto-advance to the next track
 • Shuffle: every track once per round, and Previous goes back to what you actually heard
 • Repeat: off, whole folder, or one track. Remembered between sessions
-• Shuffle, previous, next and repeat buttons right under Icedrive's own player
+• Everything right under Icedrive's own player: shuffle, previous, next, repeat, the full equalizer and the track list, with the player restyled to match Icedrive's dark look
 • Mini player window that stays open while you work in other tabs
 • Media keys and the system media overlay, with track info and artwork
 • Keyboard shortcuts (Alt+Shift+Space, Alt+Shift+. and Alt+Shift+, by default), changeable at chrome://extensions/shortcuts
@@ -111,11 +113,11 @@ All are 24-bit PNGs without an alpha channel, as the store requires.
 
 **Single purpose:**
 
-> Adds playback controls (queue, next/previous, shuffle, repeat, media keys, mini player) to the music player on icedrive.net.
+> Adds playback controls (equalizer, volume, queue, next/previous, shuffle, repeat, media keys, mini player) to the music player on icedrive.net.
 
 **Permission justifications:**
 
-- `storage`: Saves the user's shuffle and repeat settings so they persist between sessions. Nothing else is stored.
+- `storage`: Saves the user's shuffle, repeat and equalizer settings so they persist between sessions. Nothing else is stored.
 - Host permission `https://icedrive.net/*`: The extension's content script reads the currently playing track and the folder's file list from the Icedrive page, and presses Icedrive's own player controls. It runs on no other site.
 
 **Remote code:** No, I am not using remote code. All code is bundled in the package and the extension pages enforce a strict Content Security Policy.

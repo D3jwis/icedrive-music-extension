@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/images/banner.png" alt="Icedrive Music Player+ – next/previous, shuffle, repeat, media keys and a mini player for Icedrive" width="100%">
+  <img src="docs/images/banner.png" alt="Icedrive Music Player+ – equalizer, volume, shuffle, repeat, next/previous and a mini player for Icedrive" width="100%">
 </p>
 
 <p align="center">
