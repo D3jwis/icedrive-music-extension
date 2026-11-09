@@ -7,8 +7,11 @@
   <body>
     <main id="app">
       <header class="head">
-        <img class="logo" src="/icon/96.png" width="22" height="22" alt="" />
-        <span class="brand-name">Music Player<b>+</b></span>
+        <img class="logo" src="/icon/96.png" width="30" height="30" alt="" />
+        <div class="brand">
+          <span class="brand-kicker">Icedrive</span>
+          <span class="brand-name">Music Player<b>+</b></span>
+        </div>
         <button id="detach" class="icon-btn" type="button" title="Open as mini player" aria-label="Open as mini player">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7h-2zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3z" /></svg>
         </button>
@@ -84,11 +87,11 @@
         <nav id="tabs" class="seg" role="tablist" aria-label="Panels" hidden>
           <button id="tab-tracks" class="seg-btn" type="button" role="tab" aria-selected="true" aria-controls="tracks-slot">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 13h2v-2H3zm0 4h2v-2H3zm0-8h2V7H3zm4 4h14v-2H7zm0 4h14v-2H7zM7 7v2h14V7z" /></svg>
-            Tracks <small id="tab-tracks-count"></small>
+            Tracks
           </button>
           <button id="tab-eq" class="seg-btn" type="button" role="tab" aria-selected="false" aria-controls="eq-slot">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18h2V6H7zm4 4h2V2h-2zm-8-8h2v-4H3zm12 4h2V6h-2zm4-8v4h2v-4z" /></svg>
-            Equalizer <small id="tab-eq-state" class="state"></small>
+            Equalizer
           </button>
         </nav>
         <div id="panels" class="panels" hidden>

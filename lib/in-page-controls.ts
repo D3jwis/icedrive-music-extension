@@ -41,8 +41,10 @@ const STYLE = `
   }
   .tab:hover { color: var(--ice-text); background: var(--ice-hover); }
   .tab svg { width: 16px; height: 16px; fill: currentColor; }
-  .tab small { font-weight: 500; font-size: 11px; color: var(--ice-dim); }
-  .tab small.state { color: var(--ice-accent); }
+  .tab.lit::after {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--ice-candy); box-shadow: 0 0 6px rgba(63, 219, 227, 0.7);
+  }
   .tab[aria-selected='true'] {
     color: var(--ice-text); background: #1a2134;
     border-color: var(--ice-deck-border); border-bottom-color: #1a2134;
@@ -115,10 +117,10 @@ export function mountInPageControls(
 
     const eqTab = q('#eq');
     eqTab.setAttribute('aria-selected', String(open === 'eq'));
-    q('#eq-state').textContent = state.eq.enabled ? (EQ_PRESETS[state.eq.preset]?.label ?? 'Custom') : 'Off';
-    q('#eq-state').classList.toggle('state', state.eq.enabled);
+    // A dot on the tab says the equalizer is on; the preset is in the tooltip.
+    eqTab.classList.toggle('lit', state.eq.enabled);
+    eqTab.title = `Equalizer: ${state.eq.enabled ? (EQ_PRESETS[state.eq.preset]?.label ?? 'Custom') : 'off'}`;
     q('#queue-btn').setAttribute('aria-selected', String(open === 'queue'));
-    q('#queue-count').textContent = String(state.tracks.length);
     q('.ip-panel').classList.toggle('open', open !== null);
     q('.eq-panel').hidden = open !== 'eq';
     q('.track-panel').hidden = open !== 'queue';
@@ -180,21 +182,14 @@ export function mountInPageControls(
       title: 'Spectrum visualizer: click to turn on or off',
     });
     const vizStrip = el(doc, 'div', { class: 'viz-strip' }, canvas);
-    const tab = (id: string, label: string, iconPath: string, smallId: string, smallClass = '') =>
-      el(
-        doc,
-        'button',
-        { id, type: 'button', class: 'tab', role: 'tab', 'aria-selected': 'false' },
-        icon(doc, iconPath),
-        label,
-        el(doc, 'small', { id: smallId, class: smallClass }),
-      );
+    const tab = (id: string, label: string, iconPath: string) =>
+      el(doc, 'button', { id, type: 'button', class: 'tab', role: 'tab', 'aria-selected': 'false' }, icon(doc, iconPath), label);
     const tabs = el(
       doc,
       'div',
       { class: 'tabs', role: 'tablist', 'aria-label': 'Panels' },
-      tab('eq', 'Equalizer', ICONS.eq, 'eq-state', 'state'),
-      tab('queue-btn', 'Tracks', ICONS.queue, 'queue-count'),
+      tab('eq', 'Equalizer', ICONS.eq),
+      tab('queue-btn', 'Tracks', ICONS.queue),
     );
     const eqPanel = buildEqPanel(doc);
     const trackPanel = buildTrackList(doc);

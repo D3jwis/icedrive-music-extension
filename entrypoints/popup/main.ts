@@ -196,9 +196,9 @@ function render(state: PlayerState | null) {
 
   renderEqPanel(eqPanel, state.eq, state.eqStatus, draggingBand);
   renderTracks(state.tracks, state.currentIndex, state.folderName);
-  $('tab-tracks-count').textContent = String(state.tracks.length);
-  $('tab-eq-state').textContent = state.eq.enabled ? (EQ_PRESETS[state.eq.preset]?.label ?? 'Custom') : 'Off';
-  $('tab-eq-state').classList.toggle('state', state.eq.enabled);
+  // A dot on the tab says the equalizer is on; the preset is in the tooltip.
+  $('tab-eq').classList.toggle('lit', state.eq.enabled);
+  $('tab-eq').title = `Equalizer: ${state.eq.enabled ? (EQ_PRESETS[state.eq.preset]?.label ?? 'Custom') : 'off'}`;
 
   if (!state.active || !state.nowPlaying) {
     showEmpty(

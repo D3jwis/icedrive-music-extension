@@ -182,6 +182,10 @@ body.full #app {
   flex: none;
   min-width: 28px;
 }
+/* The clock next to the visualizer already shows both times. */
+.seek-row span {
+  display: none;
+}
 .seek-row span:last-child {
   text-align: right;
 }
@@ -197,11 +201,12 @@ body.full #app {
 .ib.main {
   width: 46px;
   height: 46px;
-  background: var(--ice-accent);
+  background: var(--ice-candy-button);
   color: var(--ice-knob);
+  box-shadow: var(--ice-candy-glow);
 }
 .ib.main:hover {
-  background: var(--ice-accent);
+  background: var(--ice-candy-button);
   color: var(--ice-knob);
   filter: brightness(1.1);
 }
@@ -311,15 +316,17 @@ body.full #app {
   height: 16px;
   fill: currentColor;
 }
-.seg-btn small {
-  font-weight: 500;
-  font-size: 11px;
-  color: var(--ice-dim);
-  overflow: hidden;
-  text-overflow: ellipsis;
+.seg-btn {
+  position: relative;
 }
-.seg-btn small.state {
-  color: var(--ice-accent);
+/* The equalizer is on. */
+.seg-btn.lit::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ice-candy);
+  box-shadow: 0 0 6px rgba(63, 219, 227, 0.7);
 }
 .seg-btn[aria-selected='true'] {
   background: #262e47;
@@ -398,28 +405,58 @@ body.full #app {
 
 /* Banner at the top: the extension's icon and name on its blue tile colours. */
 .head {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 8px;
-  height: 40px;
-  padding: 0 8px 0 12px;
+  gap: 10px;
+  margin: 0;
+  padding: 11px 10px 11px 14px;
   color: #fff;
+  overflow: hidden;
   background:
-    radial-gradient(120px 60px at 92% -10%, rgba(8, 200, 209, 0.4), transparent 70%),
-    linear-gradient(115deg, #0e1f45 0%, #123a78 60%, #0f6aa8 100%);
+    radial-gradient(120px 70px at 92% -10%, rgba(8, 200, 209, 0.45), transparent 70%),
+    radial-gradient(160px 90px at 10% 140%, rgba(20, 144, 214, 0.35), transparent 70%),
+    linear-gradient(115deg, #0e1f45 0%, #123a78 55%, #0f6aa8 100%);
   box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.08);
 }
-.logo {
-  flex: none;
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+/* A scatter of sparkles, echoing the one on the icon (kept clear of the name and button). */
+.head::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 46px;
+  width: 230px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 230 52'%3E%3Cpath fill='%23fff' fill-opacity='0.6' d='M176 7L177.2 10.8L181 12L177.2 13.2L176 17L174.8 13.2L171 12L174.8 10.8Z'/%3E%3Cpath fill='%23fff' fill-opacity='0.35' d='M150 33L150.72 35.28L153 36L150.72 36.72L150 39L149.28 36.72L147 36L149.28 35.28Z'/%3E%3Cpath fill='%23fff' fill-opacity='0.45' d='M124 12.8L124.528 14.472L126.2 15L124.528 15.528L124 17.2L123.472 15.528L121.8 15L123.472 14.472Z'/%3E%3Cpath fill='%23fff' fill-opacity='0.4' d='M196 37.4L196.624 39.376L198.6 40L196.624 40.624L196 42.6L195.376 40.624L193.4 40L195.376 39.376Z'/%3E%3Cpath fill='%23fff' fill-opacity='0.3' d='M98 38.2L98.432 39.568L99.8 40L98.432 40.432L98 41.8L97.568 40.432L96.2 40L97.568 39.568Z'/%3E%3Cpath fill='%23fff' fill-opacity='0.5' d='M214 14.6L214.816 17.184L217.4 18L214.816 18.816L214 21.4L213.184 18.816L210.6 18L213.184 17.184Z'/%3E%3Cpath fill='%23fff' fill-opacity='0.28' d='M70 10.4L70.384 11.616L71.6 12L70.384 12.384L70 13.6L69.616 12.384L68.4 12L69.616 11.616Z'/%3E%3C/svg%3E") right center / auto 100% no-repeat;
+  pointer-events: none;
 }
-.brand-name {
+.logo {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+.brand {
+  position: relative;
+  z-index: 1;
   flex: 1;
   min-width: 0;
-  font-size: 13.5px;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+.brand-kicker {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #8fe9ef;
+}
+.brand-name {
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
@@ -427,9 +464,11 @@ body.full #app {
   color: #3fdbe3;
 }
 .icon-btn {
+  position: relative;
+  z-index: 1;
   flex: none;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   padding: 0;
   border: 0;
   border-radius: 7px;
@@ -448,8 +487,8 @@ body.full #app {
   outline-offset: 2px;
 }
 .icon-btn svg {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
   fill: currentColor;
 }
 
@@ -549,5 +588,9 @@ body.detached .eq-panel .slot .range {
   }
   body.detached .seek-row {
     grid-area: 2 / 1 / 3 / 3;
+  }
+  /* The clock is hidden here, so the times come back beside the seek bar. */
+  body.detached .seek-row span {
+    display: block;
   }
 }
