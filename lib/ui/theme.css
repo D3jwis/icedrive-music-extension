@@ -1,0 +1,388 @@
+/*
+ * One look for the extension everywhere: the popup, the mini player window
+ * and the controls inside Icedrive's player (a shadow root). Colours and
+ * shapes follow Icedrive's dark audio preview: navy #202639 card, darker
+ * rounded panels, teal #17a1a2 accents and white slider knobs like Plyr's.
+ */
+:root,
+:host {
+  --ice-bg: #202639;
+  --ice-panel: #1a1f30;
+  --ice-panel-border: #2a3148;
+  --ice-control: #202639;
+  --ice-text: #e9ecf5;
+  --ice-text-2: #c9cfdd;
+  --ice-muted: #8f97ad;
+  --ice-dim: #7d869c;
+  --ice-accent: #17a1a2;
+  --ice-accent-soft: rgba(23, 161, 162, 0.12);
+  --ice-on-accent: #0d1220;
+  --ice-track: #313953;
+  --ice-hover: rgba(255, 255, 255, 0.08);
+  --ice-warn: #e0b252;
+  --ice-radius: 10px;
+  --ice-radius-sm: 6px;
+  --ice-knob: #ffffff;
+  --ice-knob-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(13, 18, 32, 0.25);
+  color-scheme: dark;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* Rounded panel, like the equalizer and track list under Icedrive's player. */
+.card {
+  padding: 12px;
+  border-radius: var(--ice-radius);
+  background: var(--ice-panel);
+  border: 1px solid var(--ice-panel-border);
+}
+
+/* Round icon buttons (shuffle, previous, next, repeat...). */
+.ib {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ice-text-2);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font: inherit;
+}
+.ib:hover {
+  background: var(--ice-hover);
+  color: #fff;
+}
+.ib:disabled {
+  opacity: 0.35;
+  cursor: default;
+  background: transparent;
+}
+.ib svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+.ib.toggle,
+.ib.panel-btn {
+  color: var(--ice-dim);
+}
+.ib.toggle svg,
+.ib.panel-btn svg {
+  width: 19px;
+  height: 19px;
+}
+.ib.toggle[aria-pressed='true'],
+.ib.panel-btn[aria-expanded='true'] {
+  color: var(--ice-accent);
+}
+.ib.toggle[aria-pressed='true']::after,
+.ib.panel-btn.lit::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 50%;
+  background: var(--ice-accent);
+}
+.badge {
+  position: absolute;
+  top: 4px;
+  right: 3px;
+  min-width: 12px;
+  height: 12px;
+  border-radius: 6px;
+  background: var(--ice-accent);
+  color: var(--ice-on-accent);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 12px;
+  text-align: center;
+}
+
+button:focus-visible,
+select:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--ice-accent);
+  outline-offset: 2px;
+}
+
+/* On/off switch */
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--ice-text);
+}
+.switch input {
+  appearance: none;
+  flex: none;
+  margin: 0;
+  width: 32px;
+  height: 18px;
+  border-radius: 9px;
+  background: var(--ice-track);
+  position: relative;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.switch input::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--ice-knob);
+  box-shadow: var(--ice-knob-shadow);
+  transition: transform 0.15s;
+}
+.switch input:checked {
+  background: var(--ice-accent);
+}
+.switch input:checked::after {
+  transform: translateX(14px);
+}
+
+.select {
+  min-width: 0;
+  font: inherit;
+  color: var(--ice-text);
+  background: var(--ice-control);
+  border: 1px solid var(--ice-track);
+  border-radius: var(--ice-radius-sm);
+  padding: 4px 6px;
+}
+.text-btn {
+  flex: none;
+  font: inherit;
+  padding: 4px 10px;
+  border-radius: var(--ice-radius-sm);
+  border: 1px solid var(--ice-track);
+  background: transparent;
+  color: var(--ice-text-2);
+  cursor: pointer;
+}
+.text-btn:hover {
+  background: var(--ice-hover);
+  color: #fff;
+}
+
+/*
+ * Sliders, Plyr style: thin dark track, teal fill up to the value (from
+ * --pct, set by script) and a white knob. Equalizer bands fill from the
+ * middle (0 dB) instead, via --from.
+ */
+.range {
+  --pct: 0%;
+  --from: 0%;
+  width: 100%;
+  min-width: 0;
+  height: 16px;
+  margin: 0;
+  background: transparent;
+  appearance: none;
+  cursor: pointer;
+}
+.range:disabled {
+  cursor: default;
+}
+.range::-webkit-slider-runnable-track {
+  height: 5px;
+  border-radius: 3px;
+  background: linear-gradient(
+    to right,
+    var(--ice-track) min(var(--from), var(--pct)),
+    var(--ice-accent) min(var(--from), var(--pct)),
+    var(--ice-accent) max(var(--from), var(--pct)),
+    var(--ice-track) max(var(--from), var(--pct))
+  );
+}
+.range::-webkit-slider-thumb {
+  appearance: none;
+  width: 13px;
+  height: 13px;
+  margin-top: -4px;
+  border-radius: 50%;
+  background: var(--ice-knob);
+  box-shadow: var(--ice-knob-shadow);
+  transition: transform 0.1s;
+}
+.range:hover::-webkit-slider-thumb,
+.range:active::-webkit-slider-thumb {
+  transform: scale(1.15);
+}
+.range:disabled::-webkit-slider-thumb {
+  transform: none;
+  opacity: 0.6;
+}
+.range::-moz-range-track {
+  height: 5px;
+  border-radius: 3px;
+  background: var(--ice-track);
+}
+.range::-moz-range-progress {
+  height: 5px;
+  border-radius: 3px;
+  background: var(--ice-accent);
+}
+.range::-moz-range-thumb {
+  width: 13px;
+  height: 13px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--ice-knob);
+  box-shadow: var(--ice-knob-shadow);
+}
+
+/* Equalizer panel */
+.eq-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+}
+.eq-head .select {
+  flex: 1 1 120px;
+  max-width: 220px;
+}
+.eq-head .grow {
+  flex: 1;
+}
+.eq-status {
+  font-size: 12px;
+  color: var(--ice-muted);
+}
+.eq-status.warn {
+  color: var(--ice-warn);
+}
+.bands {
+  display: grid;
+  grid-template-columns: repeat(11, minmax(24px, 1fr));
+  gap: 2px;
+  margin-top: 12px;
+}
+.bands.off {
+  opacity: 0.5;
+}
+.band {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+.band.preamp {
+  border-right: 1px solid var(--ice-panel-border);
+}
+.band .db,
+.band .freq {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ice-muted);
+  white-space: nowrap;
+}
+.band .freq {
+  color: var(--ice-text-2);
+}
+.slot {
+  position: relative;
+  width: 22px;
+  height: 110px;
+}
+.slot .range {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 110px;
+  transform: translate(-50%, -50%) rotate(-90deg);
+}
+
+/* Track list */
+.qhead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.qhead .folder {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-weight: 600;
+  color: var(--ice-text);
+}
+.qhead .folder svg {
+  flex: none;
+  width: 15px;
+  height: 15px;
+  fill: var(--ice-accent);
+}
+.qhead .folder span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.qhead .count {
+  flex: none;
+  color: var(--ice-muted);
+  font-size: 12px;
+}
+.tracks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+}
+.tracks button {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 5px 8px;
+  border: 0;
+  border-radius: var(--ice-radius-sm);
+  background: transparent;
+  color: var(--ice-text-2);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.tracks button:hover {
+  background: var(--ice-hover);
+  color: #fff;
+}
+.tracks .num {
+  flex: none;
+  width: 24px;
+  text-align: right;
+  color: var(--ice-dim);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.tracks .name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tracks .current button {
+  background: var(--ice-accent-soft);
+  color: var(--ice-accent);
+  font-weight: 600;
+}
+.tracks .current .num {
+  color: var(--ice-accent);
+}

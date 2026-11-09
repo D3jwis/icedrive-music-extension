@@ -1,28 +1,22 @@
+import '@/lib/ui/theme.css';
+import './style.css';
 import type { PlayerCommand, PlayerState } from '@/lib/messages';
-import type { TrackRef } from '@/lib/icedrive-dom';
 import { formatTime } from '@/lib/format';
 import { openMiniPlayer } from '@/lib/mini-player';
-import { CUSTOM_PRESET, EQ_PRESETS } from '@/lib/equalizer';
-import type { EqStatus } from '@/lib/audio-engine';
+import { el, icon, setRangeFill } from '@/lib/ui/dom';
+import { buildEqPanel, renderEqPanel, wireEqPanel } from '@/lib/ui/eq-panel';
+import { buildTrackList, createTrackListRenderer } from '@/lib/ui/track-list';
 import { parseArtResponse } from '@/lib/validate';
 
 const POLL_MS = 500;
 const ICEDRIVE_URL = 'https://icedrive.net/*';
+/** Whether the equalizer bands are unfolded in the popup (remembered). */
+const EQ_OPEN_KEY = 'popupEqOpen';
+const CHEVRON = 'M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z';
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 const seek = $<HTMLInputElement>('seek');
 const volume = $<HTMLInputElement>('volume');
-const presetSelect = $<HTMLSelectElement>('eq-preset');
-
-for (const [id, preset] of Object.entries(EQ_PRESETS)) presetSelect.add(new Option(preset.label, id));
-const customOption = new Option('Custom', CUSTOM_PRESET);
-customOption.disabled = true;
-presetSelect.add(customOption);
-
-/** File name without its extension, used in the queue. */
-function displayName(track: TrackRef): string {
-  return track.fileName.replace(/\.[^.]+$/, '');
-}
 
 async function findIcedriveTab(): Promise<number | undefined> {
   const [active] = await browser.tabs.query({ active: true, currentWindow: true, url: ICEDRIVE_URL });
@@ -44,18 +38,51 @@ async function send<T = PlayerState>(cmd: PlayerCommand): Promise<T | null> {
   }
 }
 
+// ---- Equalizer and track list (the same panels as inside Icedrive) ----
+
+const eqPanel = buildEqPanel(document);
+const foldBtn = el(
+  document,
+  'button',
+  { type: 'button', class: 'ib fold-btn', 'aria-label': 'Show all bands', title: 'Show all bands' },
+  icon(document, CHEVRON),
+);
+eqPanel.querySelector('.eq-head')!.append(foldBtn);
+$('eq-slot').replaceWith(eqPanel);
+
+function setEqOpen(open: boolean) {
+  eqPanel.classList.toggle('folded', !open);
+  foldBtn.setAttribute('aria-expanded', String(open));
+  const label = open ? 'Hide bands' : 'Show all bands';
+  foldBtn.setAttribute('aria-label', label);
+  foldBtn.title = label;
+}
+setEqOpen(false);
+void browser.storage.local.get(EQ_OPEN_KEY).then((saved) => setEqOpen(saved[EQ_OPEN_KEY] === true));
+foldBtn.addEventListener('click', () => {
+  const open = eqPanel.classList.contains('folded');
+  setEqOpen(open);
+  void browser.storage.local.set({ [EQ_OPEN_KEY]: open });
+});
+
+const trackPanel = buildTrackList(document);
+const tracksSlot = $('tracks-slot');
+tracksSlot.append(trackPanel);
+const renderTracks = createTrackListRenderer(trackPanel);
+
+let lastState: PlayerState | null = null;
+let draggingBand: HTMLInputElement | null = null;
+
 // ---- Rendering ----
 
 let dragging = false;
+let draggingVolume = false;
 let artSource: string | null | undefined;
-let renderedQueueKey = '';
-let renderedCurrent = -2;
 
 function showEmpty(text: string) {
   $('empty').hidden = false;
   $('empty-text').textContent = text;
-  $('now').hidden = true;
-  $('transport').hidden = true;
+  $('player').hidden = true;
 }
 
 function renderArt(sourceUrl: string | null) {
@@ -79,24 +106,14 @@ function renderSeek(currentTime: number, duration: number) {
   seek.max = String(duration || 0);
   seek.value = String(currentTime);
   seek.disabled = !duration;
-  updateSeekFill();
+  setRangeFill(seek);
   $('current').textContent = formatTime(currentTime);
   $('duration').textContent = formatTime(duration);
 }
 
-function updateFill(input: HTMLInputElement) {
-  const max = Number(input.max) || 0;
-  const pct = max ? (Number(input.value) / max) * 100 : 0;
-  input.style.setProperty('--pct', `${pct}%`);
-}
-
-const updateSeekFill = () => updateFill(seek);
-
-let draggingVolume = false;
-
 function renderVolume(level: number, muted: boolean) {
   if (!draggingVolume) volume.value = String(muted ? 0 : level);
-  updateFill(volume);
+  setRangeFill(volume);
   $('volume-pct').textContent = `${Math.round(Number(volume.value) * 100)}%`;
   const silent = muted || level === 0;
   $('icon-volume').toggleAttribute('hidden', silent);
@@ -106,74 +123,30 @@ function renderVolume(level: number, muted: boolean) {
   $('mute').title = label;
 }
 
-const EQ_STATUS_TEXT: Partial<Record<EqStatus, string>> = {
-  checking: 'Equalizer: connecting…',
-  unavailable: "Equalizer can't process this song (Icedrive's server doesn't allow it).",
-};
+const REPEAT_LABELS = { off: 'off', all: 'whole folder', one: 'one track' } as const;
 
-function renderEq({ eq, eqStatus }: PlayerState) {
-  $<HTMLInputElement>('eq-on').checked = eq.enabled;
-  presetSelect.value = eq.preset;
-  presetSelect.disabled = !eq.enabled;
-  const status = $('eq-status');
-  status.textContent = EQ_STATUS_TEXT[eqStatus] ?? '';
-  status.hidden = !status.textContent;
-  status.classList.toggle('warn', eqStatus === 'unavailable');
-}
-
-function renderQueue(tracks: TrackRef[], currentIndex: number, folderName = '') {
-  const wrap = $('queue-wrap');
-  wrap.hidden = tracks.length === 0;
-  $('queue-count').textContent = `${tracks.length} ${tracks.length === 1 ? 'track' : 'tracks'}`;
-  const folder = $('folder-name');
-  folder.textContent = folderName || 'Tracks in this folder';
-  folder.title = folderName ? `Playing from folder: ${folderName}` : '';
-
-  const list = $('queue');
-  const key = tracks.map((t) => t.id).join(',');
-  if (key !== renderedQueueKey) {
-    renderedQueueKey = key;
-    renderedCurrent = -2;
-    list.replaceChildren(
-      ...tracks.map((track, i) => {
-        const li = document.createElement('li');
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.title = track.fileName;
-        btn.dataset.id = track.id;
-        const num = document.createElement('span');
-        num.className = 'num';
-        num.textContent = String(i + 1);
-        const name = document.createElement('span');
-        name.className = 'name';
-        name.textContent = displayName(track);
-        btn.append(num, name);
-        li.append(btn);
-        return li;
-      }),
-    );
-  }
-
-  if (currentIndex !== renderedCurrent) {
-    list.querySelector('.current')?.classList.remove('current');
-    const li = list.children[currentIndex];
-    if (li) {
-      li.classList.add('current');
-      // Scroll the playing song into view the first time and when it changes.
-      li.scrollIntoView({ block: 'nearest' });
-    }
-    renderedCurrent = currentIndex;
-  }
+function renderModes({ settings }: PlayerState) {
+  const shuffle = $('shuffle');
+  shuffle.setAttribute('aria-pressed', String(settings.shuffle));
+  shuffle.title = `Shuffle: ${settings.shuffle ? 'on' : 'off'}`;
+  const repeat = $('repeat');
+  repeat.setAttribute('aria-pressed', String(settings.repeat !== 'off'));
+  repeat.title = `Repeat: ${REPEAT_LABELS[settings.repeat]}`;
+  $('repeat-one').hidden = settings.repeat !== 'one';
 }
 
 function render(state: PlayerState | null) {
+  lastState = state;
+  eqPanel.hidden = !state;
   if (!state) {
     showEmpty('Open Icedrive in your browser. If the tab is already open, reload it.');
-    renderQueue([], -1);
+    tracksSlot.hidden = true;
     return;
   }
 
-  renderQueue(state.tracks, state.currentIndex, state.folderName);
+  renderEqPanel(eqPanel, state.eq, state.eqStatus, draggingBand);
+  tracksSlot.hidden = state.tracks.length === 0;
+  renderTracks(state.tracks, state.currentIndex, state.folderName);
 
   if (!state.active || !state.nowPlaying) {
     showEmpty(
@@ -187,8 +160,7 @@ function render(state: PlayerState | null) {
 
   const { nowPlaying } = state;
   $('empty').hidden = true;
-  $('now').hidden = false;
-  $('transport').hidden = false;
+  $('player').hidden = false;
   $('title').textContent = nowPlaying.title;
   $('title').title = nowPlaying.fileName;
   $('artist').textContent = nowPlaying.artist;
@@ -198,7 +170,6 @@ function render(state: PlayerState | null) {
   renderArt(nowPlaying.artUrl);
   renderSeek(state.currentTime, state.duration);
   renderVolume(state.volume, state.muted);
-  renderEq(state);
 
   // <svg> has no .hidden property, so toggle the attribute directly.
   $('icon-play').toggleAttribute('hidden', !state.paused);
@@ -206,18 +177,6 @@ function render(state: PlayerState | null) {
   $('play').setAttribute('aria-label', state.paused ? 'Play' : 'Pause');
   $<HTMLButtonElement>('next').disabled = !state.hasNext;
   renderModes(state);
-}
-
-const REPEAT_LABELS = { off: 'off', all: 'whole folder', one: 'one track' } as const;
-
-function renderModes({ settings }: PlayerState) {
-  const shuffle = $('shuffle');
-  shuffle.setAttribute('aria-pressed', String(settings.shuffle));
-  shuffle.title = `Shuffle: ${settings.shuffle ? 'on' : 'off'}`;
-  const repeat = $('repeat');
-  repeat.setAttribute('aria-pressed', String(settings.repeat !== 'off'));
-  repeat.title = `Repeat: ${REPEAT_LABELS[settings.repeat]}`;
-  $('repeat-one').hidden = settings.repeat !== 'one';
 }
 
 // ---- Detached window ----
@@ -244,7 +203,7 @@ $('repeat').addEventListener('click', () => run({ type: 'cycleRepeat' }));
 
 seek.addEventListener('input', () => {
   dragging = true;
-  updateSeekFill();
+  setRangeFill(seek);
   $('current').textContent = formatTime(Number(seek.value));
 });
 seek.addEventListener('change', () => {
@@ -262,18 +221,25 @@ volume.addEventListener('change', () => {
   void run({ type: 'setVolume', volume: Number(volume.value) });
 });
 $('mute').addEventListener('click', () => run({ type: 'toggleMute' }));
-$<HTMLInputElement>('eq-on').addEventListener('change', (e) =>
-  run({ type: 'setEq', eq: { enabled: (e.target as HTMLInputElement).checked } }),
-);
-presetSelect.addEventListener('change', () => run({ type: 'eqPreset', preset: presetSelect.value }));
 
-$('queue').addEventListener('click', (e) => {
+wireEqPanel(
+  eqPanel,
+  {
+    // Slider moves are sent as they happen; rendering waits for the reply.
+    setEq: (eq) => void run({ type: 'setEq', eq }),
+    preset: (preset) => void run({ type: 'eqPreset', preset }),
+  },
+  () => lastState?.eq ?? null,
+  (input) => (draggingBand = input),
+);
+
+trackPanel.addEventListener('click', (e) => {
   const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-id]');
   if (btn?.dataset.id) void run({ type: 'playTrack', id: btn.dataset.id });
 });
 
 document.addEventListener('keydown', (e) => {
-  if (e.target instanceof HTMLInputElement) return;
+  if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return;
   if (e.code === 'Space') {
     e.preventDefault();
     void run({ type: 'togglePlay' });

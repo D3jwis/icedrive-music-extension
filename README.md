@@ -77,7 +77,7 @@ npm run build
 
 ### Equalizer
 
-Turn it on with the switch, then pick a preset or drag the bands. Lower the **Pre** (preamp) slider when you boost a lot, so loud songs stay clean. The popup has the on/off switch and the presets; all bands are in Icedrive's player.
+Turn it on with the switch, then pick a preset or drag the bands. Lower the **Pre** (preamp) slider when you boost a lot, so loud songs stay clean. The popup and mini player have the same equalizer: click the arrow next to *Reset* to unfold all bands.
 
 Icedrive streams songs from its download servers. To run them through the equalizer, the extension asks the browser to load the song in CORS mode, which restarts it at the same spot once (a split second). If Icedrive's server ever refuses that for a file, the song just plays as before without the equalizer, and the panel says so.
 

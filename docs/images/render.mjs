@@ -1,6 +1,5 @@
 // Renders the popup screenshots in docs/images/ from the real built popup:
 //   popup.png            the toolbar popup (340 px wide, dark theme)
-//   popup-light.png      the same in the light theme
 //   detached-window.png  the mini player window (360x640)
 // The extension APIs are replaced by a stub that returns a fixed player state,
 // so no Icedrive account is needed.
@@ -87,7 +86,7 @@ const ART = await artPage.evaluate(() => {
 });
 await artPage.close();
 
-async function shot({ out, width, height, scheme, detached }) {
+async function shot({ out, width, height, scheme, detached, eqOpen = false }) {
   const page = await browser.newPage({ viewport: { width, height }, colorScheme: scheme });
   await page.route(`${ORIGIN}/**`, async (route) => {
     const path = new URL(route.request().url()).pathname;
@@ -99,7 +98,7 @@ async function shot({ out, width, height, scheme, detached }) {
     }
   });
   await page.addInitScript(
-    ({ state, art, origin }) => {
+    ({ state, art, origin, eqOpen }) => {
       globalThis.chrome = {
         runtime: { id: 'demo', getURL: (p) => origin + p, getContexts: async () => [] },
         tabs: {
@@ -108,13 +107,14 @@ async function shot({ out, width, height, scheme, detached }) {
             cmd.type === 'getArt' ? { sourceUrl: state.nowPlaying.artUrl, dataUrl: art } : state,
         },
         windows: { update: async () => {}, create: async () => {} },
+        storage: { local: { get: async () => ({ popupEqOpen: eqOpen }), set: async () => {} } },
       };
     },
-    { state: STATE, art: ART, origin: ORIGIN },
+    { state: STATE, art: ART, origin: ORIGIN, eqOpen },
   );
   await page.goto(`${ORIGIN}/popup.html${detached ? '?detached=1' : ''}`);
   await page.waitForSelector('#art.has-image');
-  await page.evaluate(() => document.getElementById('queue').scrollTo(0, 0));
+  await page.evaluate(() => document.querySelector('.tracks').scrollTo(0, 0));
   await page.waitForTimeout(150);
   const target = detached ? page : page.locator('body');
   await target.screenshot({ path: here(`./${out}`) });
@@ -122,6 +122,5 @@ async function shot({ out, width, height, scheme, detached }) {
 }
 
 await shot({ out: 'popup.png', width: 340, height: 600, scheme: 'dark' });
-await shot({ out: 'popup-light.png', width: 340, height: 600, scheme: 'light' });
-await shot({ out: 'detached-window.png', width: 360, height: 640, scheme: 'dark', detached: true });
+await shot({ out: 'detached-window.png', width: 360, height: 640, scheme: 'dark', detached: true, eqOpen: true });
 await browser.close();
