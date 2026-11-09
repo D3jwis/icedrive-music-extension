@@ -1,7 +1,7 @@
 // Renders the popup screenshots in docs/images/ from the real built popup:
 //   popup.png            the toolbar popup (340 px wide, dark theme)
 //   detached-window.png  the mini player window (360x640)
-//   popup-equalizer.png  the popup with the equalizer bands unfolded
+//   popup-equalizer.png  the popup with the equalizer tab open
 // The extension APIs are replaced by a stub that returns a fixed player state,
 // so no Icedrive account is needed.
 //
@@ -105,11 +105,22 @@ async function shot({ out, width, height, scheme, detached, eqOpen = false, view
         runtime: { id: 'demo', getURL: (p) => origin + p, getContexts: async () => [] },
         tabs: {
           query: async () => [{ id: 1 }],
-          sendMessage: async (_id, cmd) =>
-            cmd.type === 'getArt' ? { sourceUrl: state.nowPlaying.artUrl, dataUrl: art } : state,
+          sendMessage: async (_id, cmd) => {
+            if (cmd.type === 'getArt') return { sourceUrl: state.nowPlaying.artUrl, dataUrl: art };
+            // A fixed, bass-heavy spectrum for the visualizer.
+            if (cmd.type === 'getSpectrum')
+              return Array.from({ length: cmd.bars }, (_, i) => {
+                const x = i / Math.max(1, cmd.bars - 1);
+                return Math.min(1, 0.9 - 0.5 * x + 0.12 * Math.sin(i * 1.9) + 0.08 * Math.cos(i * 0.7));
+              });
+            return state;
+          },
         },
         windows: { update: async () => {}, create: async () => {} },
-        storage: { local: { get: async () => ({ popupEqOpen: eqOpen }), set: async () => {} } },
+        storage: {
+          local: { get: async () => ({ popupTab: eqOpen ? 'eq' : 'tracks' }), set: async () => {} },
+          onChanged: { addListener() {} },
+        },
       };
     },
     { state: STATE, art: ART, origin: ORIGIN, eqOpen },
@@ -117,7 +128,7 @@ async function shot({ out, width, height, scheme, detached, eqOpen = false, view
   await page.goto(`${ORIGIN}/popup.html${detached ? '?detached=1' : ''}`);
   await page.waitForSelector('#art.has-image');
   await page.evaluate(() => document.querySelector('.tracks').scrollTo(0, 0));
-  await page.waitForTimeout(150);
+  await page.waitForTimeout(1200); // let the visualizer's bars rise
   const target = detached || viewportOnly ? page : page.locator('body');
   await target.screenshot({ path: here(`./${out}`) });
   await page.close();
@@ -125,6 +136,6 @@ async function shot({ out, width, height, scheme, detached, eqOpen = false, view
 
 await shot({ out: 'popup.png', width: 340, height: 600, scheme: 'dark' });
 await shot({ out: 'detached-window.png', width: 360, height: 640, scheme: 'dark', detached: true });
-// The popup with every equalizer band unfolded (a real popup is at most 600 px tall and scrolls).
+// The popup with the equalizer tab open.
 await shot({ out: 'popup-equalizer.png', width: 340, height: 600, scheme: 'dark', eqOpen: true, viewportOnly: true });
 await browser.close();

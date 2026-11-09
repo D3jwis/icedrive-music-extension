@@ -2,6 +2,10 @@
  * Popup and mini player. Shared colours, cards, sliders, the equalizer and
  * the track list come from lib/ui/theme.css (also used inside Icedrive's
  * player); this file only lays out the popup.
+ *
+ * Top to bottom: a slim header, the "now playing" box (cover, title, a
+ * clock and the spectrum visualizer), seek bar, transport, volume and speed,
+ * then the track list and the equalizer as two tabs sharing the space left.
  */
 * {
   box-sizing: border-box;
@@ -15,12 +19,16 @@ body {
   font: 13px/1.3 system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
-/* The banner stays put; only the content below it scrolls. Chrome caps
-   popups at 600 px, so the popup never scrolls as a whole. */
+/* The header stays put; only the content below it scrolls. Chrome caps
+   popups at 600 px, so the popup never scrolls as a whole. With a player
+   to show it is always the same height, so switching tabs doesn't jump. */
 #app {
   display: flex;
   flex-direction: column;
   max-height: 600px;
+}
+body.full #app {
+  height: 590px;
 }
 .head {
   flex: none;
@@ -31,8 +39,7 @@ body {
   overflow: hidden auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 14px;
+  padding: 12px 12px 12px;
 }
 
 /* Empty / not-connected state */
@@ -52,7 +59,14 @@ body {
   line-height: 1.4;
 }
 
-/* Now playing, laid out like Icedrive's audio card: art left, text right. */
+/* ---- The player "deck": now playing, seek, transport and volume in one panel ---- */
+.player {
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--ice-deck-glow), var(--ice-deck-bg);
+  border: 1px solid var(--ice-deck-border);
+  box-shadow: var(--ice-deck-shadow);
+}
 .now {
   display: flex;
   gap: 12px;
@@ -60,22 +74,24 @@ body {
 }
 .art {
   flex: none;
-  width: 76px;
-  height: 76px;
-  border-radius: 4px;
+  width: 64px;
+  height: 64px;
+  border-radius: 6px;
   background: #1b2031 center / cover no-repeat;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   display: grid;
   place-items: center;
 }
 .art svg {
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   fill: #4a5464;
 }
 .art.has-image svg {
   display: none;
 }
 .meta {
+  flex: 1;
   min-width: 0;
 }
 .title {
@@ -83,10 +99,9 @@ body {
   font-weight: 600;
   line-height: 1.3;
   color: var(--ice-text);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 .artist {
   margin-top: 2px;
@@ -95,39 +110,103 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.position {
-  margin-top: 4px;
+.from {
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
   font-size: 12px;
   color: var(--ice-muted);
 }
-
-.seek {
-  margin-top: 14px;
+.from svg {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  fill: var(--ice-accent);
 }
-.times {
+.from span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.np-bottom {
   display: flex;
-  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+/* A small glowing clock, like an old player's display. */
+.lcd {
+  flex: none;
+  width: 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+}
+.lcd-time {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1;
+  color: #5ff0f5;
+  text-shadow: 0 0 8px rgba(63, 219, 227, 0.55);
+}
+.lcd-total {
+  font-size: 10px;
+  line-height: 1;
+  color: #6c7a96;
+}
+.viz {
+  flex: 1;
+  min-width: 0;
+  display: block;
+  height: 40px;
+  cursor: pointer;
+}
+
+/* ---- Seek, transport, volume ---- */
+.seek-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
   font-size: 11px;
   color: var(--ice-muted);
   font-variant-numeric: tabular-nums;
+}
+.seek-row span {
+  flex: none;
+  min-width: 28px;
+}
+/* The clock next to the visualizer already shows both times. */
+.seek-row span {
+  display: none;
+}
+.seek-row span:last-child {
+  text-align: right;
 }
 
 .controls {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   margin-top: 4px;
 }
 /* White icon, like the slider knobs and Icedrive's own play button. */
 .ib.main {
-  width: 48px;
-  height: 48px;
-  background: var(--ice-accent);
+  width: 46px;
+  height: 46px;
+  background: var(--ice-candy-button);
   color: var(--ice-knob);
+  box-shadow: var(--ice-candy-glow);
 }
 .ib.main:hover {
-  background: var(--ice-accent);
+  background: var(--ice-candy-button);
   color: var(--ice-knob);
   filter: brightness(1.1);
 }
@@ -140,39 +219,158 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 6px;
+  margin-top: 4px;
 }
 .ib.small {
   flex: none;
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   color: var(--ice-text-2);
 }
 .ib.small svg {
   width: 18px;
   height: 18px;
 }
-.speed {
+/* Playback speed: a small rounded chip instead of a form-like list. */
+.chip {
   flex: none;
-  padding: 3px 2px;
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 26px;
+  padding: 0 4px 0 9px;
+  border-radius: 13px;
+  border: 1px solid var(--ice-track);
+  color: var(--ice-text-2);
   cursor: pointer;
 }
-.pct {
+.chip:hover {
+  background: var(--ice-hover);
+}
+.chip:focus-within {
+  outline: 2px solid var(--ice-accent);
+  outline-offset: 2px;
+}
+.chip svg {
   flex: none;
-  width: 34px;
-  text-align: right;
-  font-size: 11px;
-  color: var(--ice-muted);
+  width: 14px;
+  height: 14px;
+  fill: var(--ice-muted);
+}
+.speed {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
+  padding: 0 5px 0 2px;
+  cursor: pointer;
+}
+.speed:focus-visible {
+  outline: none;
+}
+.speed option {
+  background: var(--ice-control);
+  color: var(--ice-text);
 }
 
-/* Equalizer card: the bands fold away so the popup stays short. */
+/* ---- Tabs: track list / equalizer ---- */
+.seg {
+  flex: none;
+  display: flex;
+  gap: 4px;
+  margin-top: 12px;
+  padding: 3px;
+  border-radius: 9px;
+  background: var(--ice-deck-bg);
+  border: 1px solid var(--ice-deck-border);
+  box-shadow: var(--ice-deck-shadow);
+}
+.seg-btn {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 6px;
+  height: 30px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ice-muted);
+  font: inherit;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.seg-btn:hover {
+  color: var(--ice-text);
+}
+.seg-btn svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+.seg-btn {
+  position: relative;
+}
+/* The equalizer is on. */
+.seg-btn.lit::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ice-candy);
+  box-shadow: 0 0 6px rgba(63, 219, 227, 0.7);
+}
+.seg-btn[aria-selected='true'] {
+  background: #262e47;
+  color: var(--ice-text);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+.seg-btn[aria-selected='true'] svg {
+  fill: var(--ice-accent);
+}
+
+/* The open tab takes whatever height is left; long lists scroll inside. */
+.panels {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  margin-top: 8px;
+}
+.panels > [role='tabpanel'] {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+.panels > [hidden] {
+  display: none;
+}
+.track-panel,
+.eq-panel {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.tracks {
+  flex: 1;
+  min-height: 0;
+}
+
+/* Equalizer tab: "EQ" instead of "Equalizer", so the header fits one line. */
 .eq-panel .eq-head {
+  flex-wrap: nowrap;
   gap: 8px;
 }
-/* "EQ" instead of "Equalizer", so the header fits one line. */
 .eq-panel .switch-text {
   font-size: 0;
 }
@@ -181,40 +379,28 @@ body {
   font-size: 13px;
 }
 .eq-panel .eq-head .select {
-  flex: 1 1 100px;
+  flex: 1 1 90px;
 }
 .eq-panel .eq-head .grow {
   display: none;
 }
+/* No room for "Active" next to the presets; only problems and progress show, under the bands. */
 .eq-panel .eq-status {
   order: 10;
-  flex-basis: 100%;
 }
-/* The popup has no room for "Active"; only problems and progress are shown. */
 .eq-panel .eq-status:empty,
 .eq-panel .eq-status[data-status='active'] {
   display: none;
 }
-.eq-panel.folded .bands,
-.eq-panel.folded [data-eq='reset'] {
-  display: none;
+.eq-panel .bands {
+  flex: 1;
+  margin-top: 10px;
 }
-.fold-btn {
-  flex: none;
-  width: 28px;
-  height: 28px;
+.eq-panel .slot {
+  height: 100px;
 }
-.fold-btn svg {
-  width: 20px;
-  height: 20px;
-  transition: transform 0.15s;
-}
-.eq-panel:not(.folded) .fold-btn svg {
-  transform: rotate(180deg);
-}
-
-.tracks {
-  max-height: 184px;
+.eq-panel .slot .range {
+  width: 100px;
 }
 
 /* Banner at the top: the extension's icon and name on its blue tile colours. */
@@ -233,19 +419,20 @@ body {
     linear-gradient(115deg, #0e1f45 0%, #123a78 55%, #0f6aa8 100%);
   box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.08);
 }
-/* A faint sparkle, echoing the one on the icon. */
+/* A scatter of sparkles, echoing the one on the icon (kept clear of the name and button). */
 .head::after {
   content: '';
   position: absolute;
-  right: 54px;
-  top: 9px;
-  width: 9px;
-  height: 9px;
-  background: rgba(255, 255, 255, 0.55);
-  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  top: 0;
+  bottom: 0;
+  right: 46px;
+  width: 230px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 230 52'%3E%3Cpath fill='%23fff' fill-opacity='0.6' d='M176 7L177.2 10.8L181 12L177.2 13.2L176 17L174.8 13.2L171 12L174.8 10.8Z'/%3E%3Cpath fill='%23fff' fill-opacity='0.35' d='M150 33L150.72 35.28L153 36L150.72 36.72L150 39L149.28 36.72L147 36L149.28 35.28Z'/%3E%3Cpath fill='%23fff' fill-opacity='0.45' d='M124 12.8L124.528 14.472L126.2 15L124.528 15.528L124 17.2L123.472 15.528L121.8 15L123.472 14.472Z'/%3E%3Cpath fill='%23fff' fill-opacity='0.4' d='M196 37.4L196.624 39.376L198.6 40L196.624 40.624L196 42.6L195.376 40.624L193.4 40L195.376 39.376Z'/%3E%3Cpath fill='%23fff' fill-opacity='0.3' d='M98 38.2L98.432 39.568L99.8 40L98.432 40.432L98 41.8L97.568 40.432L96.2 40L97.568 39.568Z'/%3E%3Cpath fill='%23fff' fill-opacity='0.5' d='M214 14.6L214.816 17.184L217.4 18L214.816 18.816L214 21.4L213.184 18.816L210.6 18L213.184 17.184Z'/%3E%3Cpath fill='%23fff' fill-opacity='0.28' d='M70 10.4L70.384 11.616L71.6 12L70.384 12.384L70 13.6L69.616 12.384L68.4 12L69.616 11.616Z'/%3E%3C/svg%3E") right center / auto 100% no-repeat;
   pointer-events: none;
 }
 .logo {
+  position: relative;
+  z-index: 1;
   flex: none;
   width: 30px;
   height: 30px;
@@ -253,6 +440,8 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
 }
 .brand {
+  position: relative;
+  z-index: 1;
   flex: 1;
   min-width: 0;
   display: flex;
@@ -275,12 +464,14 @@ body {
   color: #3fdbe3;
 }
 .icon-btn {
+  position: relative;
+  z-index: 1;
   flex: none;
   width: 30px;
   height: 30px;
   padding: 0;
   border: 0;
-  border-radius: 8px;
+  border-radius: 7px;
   background: rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.85);
   display: grid;
@@ -331,7 +522,7 @@ body {
   }
 }
 
-/* Detached window: fill the window and let the track list use the spare height. */
+/* ---- Detached window (mini player): fills the window; the tabs get the spare height. ---- */
 body.detached {
   width: auto;
   min-width: 300px;
@@ -341,31 +532,65 @@ body.detached #app {
   height: 100%;
   max-height: none;
 }
-body.detached .body {
-  flex: 1;
-  min-height: 0;
-}
-body.detached #tracks-slot {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-}
-body.detached #tracks-slot[hidden] {
-  display: none;
-}
-body.detached .track-panel {
-  flex: 1;
-  /* Without this the flex row grows to fit the longest track name and the
-     whole window scrolls sideways. */
-  min-width: 0;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-}
-body.detached .tracks {
-  flex: 1;
-  max-height: none;
-}
 body.detached #detach {
   display: none;
+}
+body.detached .eq-panel .slot {
+  height: 130px;
+}
+body.detached .eq-panel .slot .range {
+  width: 130px;
+}
+
+/*
+ * Short mini player window: only the essentials in a bar. Cover and title
+ * on the left, the buttons on the right, the seek bar underneath.
+ */
+@media (max-height: 260px) {
+  body.detached .head,
+  body.detached .np-bottom,
+  body.detached .volume,
+  body.detached .seg,
+  body.detached .panels {
+    display: none;
+  }
+  body.detached .body {
+    overflow: hidden;
+    justify-content: center;
+  }
+  body.detached .player {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 8px;
+  }
+  body.detached .player {
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+  }
+  body.detached .np-box {
+    grid-area: 1 / 1;
+  }
+  body.detached .controls {
+    grid-area: 1 / 2;
+    gap: 2px;
+    margin: 0;
+  }
+  body.detached .controls .ib {
+    width: 32px;
+    height: 32px;
+  }
+  body.detached .controls .ib.main {
+    width: 40px;
+    height: 40px;
+  }
+  body.detached .seek-row {
+    grid-area: 2 / 1 / 3 / 3;
+  }
+  /* The clock is hidden here, so the times come back beside the seek bar. */
+  body.detached .seek-row span {
+    display: block;
+  }
 }

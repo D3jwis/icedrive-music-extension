@@ -209,6 +209,7 @@ export class PlayerController {
         break;
       case 'getState':
       case 'getArt':
+      case 'getSpectrum':
         break;
     }
     return this.getState();

@@ -6,6 +6,7 @@ import { PlayerController } from '@/lib/player-controller';
 import { AudioEngine } from '@/lib/audio-engine';
 import type { ArtResponse } from '@/lib/messages';
 import { isFromExtensionPage, parseCommand, sanitizeEq, sanitizeSettings } from '@/lib/validate';
+import { VISUALIZER_KEY, readVisualizerSetting } from '@/lib/ui/visualizer';
 
 const SETTINGS_KEY = 'playbackSettings';
 const EQ_KEY = 'equalizer';
@@ -49,6 +50,14 @@ export default defineContentScript({
       if (JSON.stringify(change.newValue) === lastSavedEq) return;
       engine.setSettings(sanitizeEq(change.newValue));
     });
+    // The spectrum visualizer (popup, mini player and in-page) is one shared on/off setting.
+    const savedViz = await browser.storage.local.get(VISUALIZER_KEY);
+    engine.setAnalysing(readVisualizerSetting(savedViz[VISUALIZER_KEY]));
+    browser.storage.onChanged.addListener((changes, area) => {
+      const change = changes[VISUALIZER_KEY];
+      if (area === 'local' && change) engine.setAnalysing(readVisualizerSetting(change.newValue));
+    });
+
     engine.watch();
     setInterval(() => engine.sync(), EQ_SYNC_MS);
 
@@ -65,6 +74,10 @@ export default defineContentScript({
         const sourceUrl = player.getState().nowPlaying?.artUrl ?? null;
         artToDataUrl(sourceUrl).then((dataUrl) => sendResponse({ sourceUrl, dataUrl } satisfies ArtResponse));
         return true; // keep the channel open for the async reply
+      }
+      if (message.type === 'getSpectrum') {
+        sendResponse(engine.getSpectrum(message.bars));
+        return;
       }
       sendResponse(player.handle(message));
     });

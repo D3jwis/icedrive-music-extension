@@ -23,6 +23,10 @@ const BAND_Q = 1.4;
 /** Seconds for gain changes to settle, so moving a slider doesn't click. */
 const RAMP_S = 0.03;
 const RESUME_TIMEOUT_MS = 500;
+/** Range the spectrum visualizer shows. */
+const SPECTRUM_MIN_HZ = 40;
+const SPECTRUM_MAX_HZ = 16_000;
+const SPECTRUM_TILT = 0.12;
 
 const dbToGain = (db: number) => 10 ** (db / 20);
 
@@ -54,7 +58,8 @@ export async function probeCors(url: string): Promise<boolean> {
  * we check that the host allows CORS, switch the element to
  * crossorigin="anonymous" and reload it at the same position. If the host
  * refuses, the song keeps playing untouched and the status says
- * "unavailable". Nothing is routed while the equalizer is off.
+ * "unavailable". Nothing is routed while both the equalizer and the
+ * spectrum visualizer are off.
  */
 export class AudioEngine {
   private settings: EqSettings = cloneEq(DEFAULT_EQ);
@@ -62,6 +67,10 @@ export class AudioEngine {
   private preamp: GainNode | null = null;
   private filters: BiquadFilterNode[] = [];
   private limiter: DynamicsCompressorNode | null = null;
+  private analyser: AnalyserNode | null = null;
+  private spectrumData: Uint8Array<ArrayBuffer> | null = null;
+  /** The visualizer wants the audio even while the equalizer is off. */
+  private analysing = false;
   private readonly sources = new WeakMap<HTMLMediaElement, MediaElementAudioSourceNode>();
   private unavailable = new WeakSet<HTMLMediaElement>();
   private routed: HTMLMediaElement | null = null;
@@ -90,15 +99,61 @@ export class AudioEngine {
 
   /** Applies saved settings (does not call onSettingsChange). */
   setSettings(settings: EqSettings): void {
-    const wasEnabled = this.settings.enabled;
+    const wasWanted = this.wanted;
     this.settings = cloneEq(settings);
-    if (this.settings.enabled && !wasEnabled) {
-      // Switching on again retries songs and hosts that were refused before.
-      this.corsByOrigin.clear();
-      this.unavailable = new WeakSet();
-    }
+    this.retryIfSwitchedOn(wasWanted);
     this.applyCurve();
     this.sync();
+  }
+
+  /**
+   * Turns the spectrum visualizer's need for the audio on or off. While it
+   * is on, songs go through the audio graph even with the equalizer off
+   * (with a flat curve, so they sound the same).
+   */
+  setAnalysing(on: boolean): void {
+    const wasWanted = this.wanted;
+    this.analysing = on;
+    this.retryIfSwitchedOn(wasWanted);
+    this.sync();
+  }
+
+  /** Whether songs should be routed through the audio graph at all. */
+  private get wanted(): boolean {
+    return this.settings.enabled || this.analysing;
+  }
+
+  /** Switching on again retries songs and hosts that were refused before. */
+  private retryIfSwitchedOn(wasWanted: boolean): void {
+    if (!this.wanted || wasWanted) return;
+    this.corsByOrigin.clear();
+    this.unavailable = new WeakSet();
+  }
+
+  /**
+   * Loudness of `bars` frequency bands (40 Hz to 16 kHz, spaced like the
+   * equalizer: evenly on a log scale), each 0..1. Null while no song is
+   * going through the audio graph.
+   */
+  getSpectrum(bars: number): number[] | null {
+    const audio = findAudio(this.doc);
+    if (!this.analyser || !this.spectrumData || !this.ctx || this.ctx.state !== 'running') return null;
+    if (!audio || audio !== this.routed) return null;
+    const data = this.spectrumData;
+    this.analyser.getByteFrequencyData(data);
+    const binHz = this.ctx.sampleRate / this.analyser.fftSize;
+    const lo = Math.log(SPECTRUM_MIN_HZ);
+    const span = Math.log(SPECTRUM_MAX_HZ) - lo;
+    const out: number[] = [];
+    for (let i = 0; i < bars; i++) {
+      const from = Math.floor(Math.exp(lo + (span * i) / bars) / binHz);
+      const to = Math.max(from + 1, Math.floor(Math.exp(lo + (span * (i + 1)) / bars) / binHz));
+      let peak = 0;
+      for (let b = from; b < to && b < data.length; b++) peak = Math.max(peak, data[b]!);
+      // Music is quieter up high; a gentle tilt keeps the right side of the bars alive.
+      out.push(peak ? Math.min(1, peak / 255 + (SPECTRUM_TILT * i) / Math.max(1, bars - 1)) : 0);
+    }
+    return out;
   }
 
   /** A change made by the user. */
@@ -123,7 +178,7 @@ export class AudioEngine {
    */
   sync(): void {
     if (this.ctx?.state === 'suspended' && this.routed) void this.ctx.resume().catch(() => {});
-    if (!this.settings.enabled) return;
+    if (!this.wanted) return;
     const audio = findAudio(this.doc);
     if (!audio || this.sources.has(audio) || this.unavailable.has(audio) || this.checking) return;
     this.checking = audio;
@@ -192,7 +247,15 @@ export class AudioEngine {
         node = f;
       }
       node.connect(this.limiter);
-      this.limiter.connect(ctx.destination);
+      // The analyser only listens; the sound passes through it unchanged.
+      this.analyser = ctx.createAnalyser();
+      this.analyser.fftSize = 2048;
+      this.analyser.smoothingTimeConstant = 0.7;
+      this.analyser.minDecibels = -85;
+      this.analyser.maxDecibels = -20;
+      this.spectrumData = new Uint8Array(this.analyser.frequencyBinCount);
+      this.limiter.connect(this.analyser);
+      this.analyser.connect(ctx.destination);
       this.ctx = ctx;
       this.applyCurve();
     }

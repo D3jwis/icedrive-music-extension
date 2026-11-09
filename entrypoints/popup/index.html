@@ -12,7 +12,7 @@
           <span class="brand-kicker">Icedrive</span>
           <span class="brand-name">Music Player<b>+</b></span>
         </div>
-        <button id="detach" class="icon-btn" type="button" title="Open in a separate window" aria-label="Open in a separate window">
+        <button id="detach" class="icon-btn" type="button" title="Open as mini player" aria-label="Open as mini player">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7h-2zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3z" /></svg>
         </button>
       </header>
@@ -24,19 +24,32 @@
         </section>
 
         <section id="player" class="player" hidden>
-          <div class="now">
-            <div id="art" class="art" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z" /></svg>
+          <!-- Now playing: cover, title and the spectrum visualizer in one box. -->
+          <div class="np-box">
+            <div class="now">
+              <div id="art" class="art" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z" /></svg>
+              </div>
+              <div class="meta">
+                <div id="title" class="title"></div>
+                <div id="artist" class="artist"></div>
+                <div class="from">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8z" /></svg>
+                  <span id="position"></span>
+                </div>
+              </div>
             </div>
-            <div class="meta">
-              <div id="title" class="title"></div>
-              <div id="artist" class="artist"></div>
-              <div id="position" class="position"></div>
+            <div class="np-bottom">
+              <div class="lcd" aria-hidden="true"><span id="lcd-time" class="lcd-time">0:00</span><span id="lcd-total" class="lcd-total">/ 0:00</span></div>
+              <canvas id="viz" class="viz" title="Spectrum visualizer: click to turn off" role="button" tabindex="0" aria-label="Spectrum visualizer" aria-pressed="true"></canvas>
             </div>
           </div>
 
-          <input id="seek" class="range seek" type="range" min="0" max="0" step="0.1" value="0" aria-label="Seek" />
-          <div class="times"><span id="current">0:00</span><span id="duration">0:00</span></div>
+          <div class="seek-row">
+            <span id="current">0:00</span>
+            <input id="seek" class="range seek" type="range" min="0" max="0" step="0.1" value="0" aria-label="Seek" />
+            <span id="duration">0:00</span>
+          </div>
 
           <div class="controls">
             <button id="shuffle" class="ib toggle" type="button" title="Shuffle: off" aria-label="Shuffle" aria-pressed="false">
@@ -64,13 +77,27 @@
               <svg id="icon-muted" viewBox="0 0 24 24" hidden><path d="M16.5 12A4.5 4.5 0 0 0 14 7.97v2.21l2.45 2.45c.03-.2.05-.41.05-.63m2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51A8.8 8.8 0 0 0 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71M4.27 3 3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06a9 9 0 0 0 3.69-1.81L19.73 21 21 19.73l-9-9zM12 4 9.91 6.09 12 8.18z" /></svg>
             </button>
             <input id="volume" class="range" type="range" min="0" max="1" step="0.01" value="1" aria-label="Volume" />
-            <span id="volume-pct" class="pct">100%</span>
-            <select id="speed" class="select speed" title="Playback speed" aria-label="Playback speed"></select>
+            <label class="chip" title="Playback speed">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.38 8.57l-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.27-10.44zm-9.79 6.84a2 2 0 0 0 2.83 0l5.66-8.49-8.49 5.66a2 2 0 0 0 0 2.83z" /></svg>
+              <select id="speed" class="speed" aria-label="Playback speed"></select>
+            </label>
           </div>
         </section>
 
-        <div id="eq-slot"></div>
-        <div id="tracks-slot" hidden></div>
+        <nav id="tabs" class="seg" role="tablist" aria-label="Panels" hidden>
+          <button id="tab-tracks" class="seg-btn" type="button" role="tab" aria-selected="true" aria-controls="tracks-slot">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 13h2v-2H3zm0 4h2v-2H3zm0-8h2V7H3zm4 4h14v-2H7zm0 4h14v-2H7zM7 7v2h14V7z" /></svg>
+            Tracks
+          </button>
+          <button id="tab-eq" class="seg-btn" type="button" role="tab" aria-selected="false" aria-controls="eq-slot">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18h2V6H7zm4 4h2V2h-2zm-8-8h2v-4H3zm12 4h2V6h-2zm4-8v4h2v-4z" /></svg>
+            Equalizer
+          </button>
+        </nav>
+        <div id="panels" class="panels" hidden>
+          <div id="tracks-slot" role="tabpanel" aria-labelledby="tab-tracks"></div>
+          <div id="eq-slot" role="tabpanel" aria-labelledby="tab-eq" hidden></div>
+        </div>
       </div>
     </main>
     <script type="module" src="./main.ts"></script>
