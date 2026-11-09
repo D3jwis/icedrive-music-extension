@@ -9,6 +9,8 @@ changes under **Unreleased** as you go and rename it when you tag.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-09
+
 ### Added
 
 - **Full equalizer in the popup and mini player**: all 10 bands and the preamp, folded away by default (the arrow next to *Reset* unfolds it; remembered).
@@ -91,7 +93,8 @@ First public release for Chrome and Brave.
 - Release zips ship with SHA-256 checksums and a signed build provenance attestation.
 - See [SECURITY.md](SECURITY.md) and the [work laptop guide](docs/enterprise-install.md).
 
-[Unreleased]: https://github.com/D3jwis/icedrive-music-extension/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/D3jwis/icedrive-music-extension/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/D3jwis/icedrive-music-extension/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/D3jwis/icedrive-music-extension/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/D3jwis/icedrive-music-extension/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/D3jwis/icedrive-music-extension/compare/v0.1.1...v0.1.2
