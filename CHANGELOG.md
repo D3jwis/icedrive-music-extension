@@ -16,6 +16,7 @@ changes under **Unreleased** as you go and rename it when you tag.
 
 ### Changed
 
+- **New icon**: a white polar bear in headphones on the blue-to-turquoise tile, with the face and headphone outlines cut out so the background shows through (a nod to Icedrive's own bear).
 - **New popup layout**: cover, title and folder in one box with the clock (which replaces the times beside the seek bar); playback speed as a small chip next to the volume. The track list and the equalizer are now two tabs (remembered) sharing the space below, so the popup keeps the same height and the list no longer gets pushed out when the equalizer is open. A dot on the *Equalizer* tab shows it is on.
 - **"Candy" accents**: the play button, the seek and volume fills and the on/off switches use the icon's glossy blue-to-turquoise gradient.
 - More sparkles in the popup's banner.
