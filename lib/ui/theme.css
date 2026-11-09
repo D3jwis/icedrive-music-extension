@@ -388,3 +388,21 @@ input:focus-visible {
 .tracks .current .num {
   color: var(--ice-accent);
 }
+
+/* The playing track shows small level bars instead of its number. */
+.tracks .current .num {
+  position: relative;
+  color: transparent;
+}
+.tracks .current .num::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 1px;
+  width: 11px;
+  height: 11px;
+  background:
+    linear-gradient(var(--ice-accent), var(--ice-accent)) 0 100% / 3px 55% no-repeat,
+    linear-gradient(var(--ice-accent), var(--ice-accent)) 4px 100% / 3px 100% no-repeat,
+    linear-gradient(var(--ice-accent), var(--ice-accent)) 8px 100% / 3px 70% no-repeat;
+}

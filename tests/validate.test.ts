@@ -6,8 +6,21 @@ import {
   parseArtResponse,
   parseBridgeRequest,
   parseCommand,
+  parseSpectrum,
   sanitizeSettings,
 } from '../lib/validate';
+
+describe('spectrum messages', () => {
+  it('accepts a sane bar count and rejects the rest', () => {
+    expect(parseCommand({ type: 'getSpectrum', bars: 28 })).toEqual({ type: 'getSpectrum', bars: 28 });
+    for (const bars of [0, -1, 2.5, 129, '28', undefined]) expect(parseCommand({ type: 'getSpectrum', bars })).toBeNull();
+  });
+
+  it('clamps replies and rejects anything that is not a short list of numbers', () => {
+    expect(parseSpectrum([0, 0.5, 2, -1])).toEqual([0, 0.5, 1, 0]);
+    for (const bad of [null, 'x', {}, [Number.NaN], ['1'], new Array(129).fill(0)]) expect(parseSpectrum(bad)).toBeNull();
+  });
+});
 
 describe('parseCommand', () => {
   it('accepts every real command', () => {

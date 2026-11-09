@@ -3,17 +3,20 @@ import './style.css';
 import type { PlayerCommand, PlayerState } from '@/lib/messages';
 import { formatTime } from '@/lib/format';
 import { openMiniPlayer } from '@/lib/mini-player';
-import { el, icon, setRangeFill } from '@/lib/ui/dom';
+import { el, setRangeFill } from '@/lib/ui/dom';
 import { buildEqPanel, renderEqPanel, wireEqPanel } from '@/lib/ui/eq-panel';
 import { buildTrackList, createTrackListRenderer } from '@/lib/ui/track-list';
+import { barsForWidth, createVisualizer, readVisualizerSetting, VISUALIZER_KEY } from '@/lib/ui/visualizer';
+import { EQ_PRESETS } from '@/lib/equalizer';
 import { formatSpeed, PLAYBACK_SPEEDS } from '@/lib/speed';
-import { parseArtResponse } from '@/lib/validate';
+import { parseArtResponse, parseSpectrum } from '@/lib/validate';
 
 const POLL_MS = 500;
 const ICEDRIVE_URL = 'https://icedrive.net/*';
-/** Whether the equalizer bands are unfolded in the popup (remembered). */
-const EQ_OPEN_KEY = 'popupEqOpen';
-const CHEVRON = 'M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z';
+/** Which panel tab (track list or equalizer) is open (remembered). */
+const TAB_KEY = 'popupTab';
+/** The visualizer asks the Icedrive tab for new levels about this often. */
+const SPECTRUM_MS = 33;
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 const seek = $<HTMLInputElement>('seek');
@@ -41,37 +44,67 @@ async function send<T = PlayerState>(cmd: PlayerCommand): Promise<T | null> {
   }
 }
 
-// ---- Equalizer and track list (the same panels as inside Icedrive) ----
+// ---- Equalizer and track list (the same panels as inside Icedrive), as tabs ----
 
 const eqPanel = buildEqPanel(document);
-const foldBtn = el(
-  document,
-  'button',
-  { type: 'button', class: 'ib fold-btn', 'aria-label': 'Show all bands', title: 'Show all bands' },
-  icon(document, CHEVRON),
-);
-eqPanel.querySelector('.eq-head')!.append(foldBtn);
-$('eq-slot').replaceWith(eqPanel);
+$('eq-slot').append(eqPanel);
+const trackPanel = buildTrackList(document);
+$('tracks-slot').append(trackPanel);
+const renderTracks = createTrackListRenderer(trackPanel);
 
-function setEqOpen(open: boolean) {
-  eqPanel.classList.toggle('folded', !open);
-  foldBtn.setAttribute('aria-expanded', String(open));
-  const label = open ? 'Hide bands' : 'Show all bands';
-  foldBtn.setAttribute('aria-label', label);
-  foldBtn.title = label;
+type Tab = 'tracks' | 'eq';
+function showTab(tab: Tab) {
+  for (const [id, slot] of [['tracks', 'tracks-slot'], ['eq', 'eq-slot']] as const) {
+    $(`tab-${id}`).setAttribute('aria-selected', String(tab === id));
+    $(slot).hidden = tab !== id;
+  }
 }
-setEqOpen(false);
-void browser.storage.local.get(EQ_OPEN_KEY).then((saved) => setEqOpen(saved[EQ_OPEN_KEY] === true));
-foldBtn.addEventListener('click', () => {
-  const open = eqPanel.classList.contains('folded');
-  setEqOpen(open);
-  void browser.storage.local.set({ [EQ_OPEN_KEY]: open });
+showTab('tracks');
+void browser.storage.local.get(TAB_KEY).then((saved) => showTab(saved[TAB_KEY] === 'eq' ? 'eq' : 'tracks'));
+for (const tab of ['tracks', 'eq'] as const) {
+  $(`tab-${tab}`).addEventListener('click', () => {
+    showTab(tab);
+    void browser.storage.local.set({ [TAB_KEY]: tab });
+  });
+}
+
+// ---- Spectrum visualizer ----
+
+let spectrum: number[] | null = null;
+let vizOn = true;
+const vizCanvas = $<HTMLCanvasElement>('viz');
+const visualizer = createVisualizer(vizCanvas, () => spectrum);
+
+function setVizOn(on: boolean) {
+  vizOn = on;
+  visualizer.setEnabled(on);
+  vizCanvas.setAttribute('aria-pressed', String(on));
+  vizCanvas.title = on ? 'Spectrum visualizer: click to turn off' : 'Spectrum visualizer: click to turn on';
+  if (!on) spectrum = null;
+}
+void browser.storage.local.get(VISUALIZER_KEY).then((saved) => setVizOn(readVisualizerSetting(saved[VISUALIZER_KEY])));
+browser.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local' && VISUALIZER_KEY in changes) setVizOn(readVisualizerSetting(changes[VISUALIZER_KEY]!.newValue));
+});
+const toggleViz = () => void browser.storage.local.set({ [VISUALIZER_KEY]: !vizOn });
+vizCanvas.addEventListener('click', toggleViz);
+vizCanvas.addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  e.preventDefault();
+  toggleViz();
 });
 
-const trackPanel = buildTrackList(document);
-const tracksSlot = $('tracks-slot');
-tracksSlot.append(trackPanel);
-const renderTracks = createTrackListRenderer(trackPanel);
+/** Fetches levels while a song plays, one request at a time. */
+async function pollSpectrum() {
+  const playing = vizOn && lastState?.active && !lastState.paused;
+  if (playing && !$('player').hidden) {
+    const bars = barsForWidth(vizCanvas.clientWidth);
+    spectrum = parseSpectrum(await send<unknown>({ type: 'getSpectrum', bars }));
+  } else {
+    spectrum = null;
+  }
+  setTimeout(() => void pollSpectrum(), SPECTRUM_MS);
+}
 
 let lastState: PlayerState | null = null;
 let draggingBand: HTMLInputElement | null = null;
@@ -112,12 +145,14 @@ function renderSeek(currentTime: number, duration: number) {
   setRangeFill(seek);
   $('current').textContent = formatTime(currentTime);
   $('duration').textContent = formatTime(duration);
+  $('lcd-time').textContent = formatTime(currentTime);
+  $('lcd-total').textContent = `/ ${formatTime(duration)}`;
 }
 
 function renderVolume(level: number, muted: boolean) {
   if (!draggingVolume) volume.value = String(muted ? 0 : level);
   setRangeFill(volume);
-  $('volume-pct').textContent = `${Math.round(Number(volume.value) * 100)}%`;
+  volume.title = `Volume: ${Math.round(Number(volume.value) * 100)}%`;
   const silent = muted || level === 0;
   $('icon-volume').toggleAttribute('hidden', silent);
   $('icon-muted').toggleAttribute('hidden', !silent);
@@ -151,16 +186,19 @@ function renderModes({ settings }: PlayerState) {
 
 function render(state: PlayerState | null) {
   lastState = state;
-  eqPanel.hidden = !state;
+  $('tabs').hidden = !state;
+  $('panels').hidden = !state;
+  document.body.classList.toggle('full', !!state);
   if (!state) {
     showEmpty('Open Icedrive in your browser. If the tab is already open, reload it.');
-    tracksSlot.hidden = true;
     return;
   }
 
   renderEqPanel(eqPanel, state.eq, state.eqStatus, draggingBand);
-  tracksSlot.hidden = state.tracks.length === 0;
   renderTracks(state.tracks, state.currentIndex, state.folderName);
+  $('tab-tracks-count').textContent = String(state.tracks.length);
+  $('tab-eq-state').textContent = state.eq.enabled ? (EQ_PRESETS[state.eq.preset]?.label ?? 'Custom') : 'Off';
+  $('tab-eq-state').classList.toggle('state', state.eq.enabled);
 
   if (!state.active || !state.nowPlaying) {
     showEmpty(
@@ -179,8 +217,9 @@ function render(state: PlayerState | null) {
   $('title').title = nowPlaying.fileName;
   $('artist').textContent = nowPlaying.artist;
   $('artist').hidden = !nowPlaying.artist;
-  $('position').textContent =
-    state.currentIndex >= 0 ? `Track ${state.currentIndex + 1} of ${state.tracks.length}` : '';
+  const place = state.currentIndex >= 0 ? `${state.currentIndex + 1} / ${state.tracks.length}` : '';
+  $('position').textContent = [state.folderName, place].filter(Boolean).join(' · ');
+  ($('position').parentElement as HTMLElement).hidden = !$('position').textContent;
   renderArt(nowPlaying.artUrl);
   renderSeek(state.currentTime, state.duration);
   renderVolume(state.volume, state.muted);
@@ -255,7 +294,13 @@ trackPanel.addEventListener('click', (e) => {
 });
 
 document.addEventListener('keydown', (e) => {
-  if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return;
+  if (
+    e.target instanceof HTMLInputElement ||
+    e.target instanceof HTMLSelectElement ||
+    e.target instanceof HTMLButtonElement ||
+    e.target === vizCanvas
+  )
+    return;
   if (e.code === 'Space') {
     e.preventDefault();
     void run({ type: 'togglePlay' });
@@ -264,3 +309,4 @@ document.addEventListener('keydown', (e) => {
 
 void run();
 setInterval(() => void run(), POLL_MS);
+void pollSpectrum();

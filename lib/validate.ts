@@ -79,9 +79,25 @@ export function parseCommand(value: unknown): PlayerCommand | null {
       const eq = parseEqPatch(value.eq);
       return eq ? { type: 'setEq', eq } : null;
     }
+    case 'getSpectrum':
+      return isBarCount(value.bars) ? { type: 'getSpectrum', bars: value.bars } : null;
     default:
       return null;
   }
+}
+
+/** The visualizer never draws more bars than this. */
+export const MAX_SPECTRUM_BARS = 128;
+
+function isBarCount(value: unknown): value is number {
+  return Number.isInteger(value) && (value as number) >= 1 && (value as number) <= MAX_SPECTRUM_BARS;
+}
+
+/** A spectrum reply: up to MAX_SPECTRUM_BARS levels, each clamped to 0..1. Null for anything else. */
+export function parseSpectrum(value: unknown): number[] | null {
+  if (!Array.isArray(value) || value.length > MAX_SPECTRUM_BARS) return null;
+  if (!value.every((v) => typeof v === 'number' && Number.isFinite(v))) return null;
+  return value.map((v: number) => Math.min(1, Math.max(0, v)));
 }
 
 function isDb(value: unknown): value is number {

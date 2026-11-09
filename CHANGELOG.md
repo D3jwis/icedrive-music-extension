@@ -9,6 +9,17 @@ changes under **Unreleased** as you go and rename it when you tag.
 
 ## [Unreleased]
 
+### Added
+
+- **Spectrum visualizer**: animated level bars with falling peak caps, in a new "now playing" box in the popup and mini player (next to a small glowing clock) and as a strip under Icedrive's player. Click it to turn it off or on (shared everywhere). It uses the same audio processing as the equalizer, so it works on songs where the equalizer shows *Active*; with the visualizer on, songs go through that processing even when the equalizer is off (with a flat curve, so they sound the same).
+- **Compact mini player**: make the mini player window short and it turns into a bar with the cover, title, buttons and seek bar.
+
+### Changed
+
+- **New popup layout**: a slimmer header; cover, title and folder in one box; times beside the seek bar; playback speed as a small chip next to the volume. The track list and the equalizer are now two tabs (remembered) sharing the space below, so the popup keeps the same height and the list no longer gets pushed out when the equalizer is open.
+- **Inside Icedrive**: shuffle, previous, next and repeat line up with Icedrive's player controls, with the mini player button at the end of the row. The equalizer and the track list are labelled tabs (click the open one to close it), and the list uses two columns when there is room.
+- The playing track shows small level bars instead of its number.
+
 ## [0.4.0] - 2026-11-09
 
 ### Added

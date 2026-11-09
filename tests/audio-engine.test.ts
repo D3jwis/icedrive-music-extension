@@ -23,6 +23,17 @@ function fakeContext(state: AudioContextState = 'running') {
     createBiquadFilter: () => ({ ...node(), type: '', frequency: param(), Q: param(), gain: param() }),
     createDynamicsCompressor: () => ({ ...node(), threshold: param(), knee: param(), ratio: param(), attack: param(), release: param() }),
     createMediaElementSource: vi.fn((el: HTMLMediaElement) => ({ ...node(), el })),
+    sampleRate: 48_000,
+    createAnalyser: () => ({
+      ...node(),
+      fftSize: 2048,
+      smoothingTimeConstant: 0,
+      minDecibels: 0,
+      maxDecibels: 0,
+      frequencyBinCount: 1024,
+      // Loud bass, silent treble.
+      getByteFrequencyData: (data: Uint8Array) => data.forEach((_, i) => (data[i] = i < 10 ? 255 : 0)),
+    }),
   };
   return ctx;
 }
@@ -82,6 +93,19 @@ describe('AudioEngine', () => {
     expect(audio().hasAttribute('crossorigin')).toBe(false);
     expect(audio().load).toHaveBeenCalledTimes(2);
     expect(ctx.createMediaElementSource).not.toHaveBeenCalled();
+  });
+
+  it('routes for the visualizer with the equalizer off, and reports the spectrum', async () => {
+    const ctx = fakeContext();
+    const engine = new AudioEngine(document, { createContext: () => ctx as unknown as AudioContext, probeCors: async () => true });
+    expect(engine.getSpectrum(8)).toBeNull();
+    engine.setAnalysing(true);
+    await vi.waitFor(() => expect(ctx.createMediaElementSource).toHaveBeenCalledWith(audio()));
+    expect(engine.getStatus()).toBe('off'); // the equalizer itself stays off
+    const spectrum = engine.getSpectrum(8)!;
+    expect(spectrum).toHaveLength(8);
+    expect(spectrum[0]).toBe(1);
+    expect(spectrum[7]).toBe(0);
   });
 
   it('waits for a user gesture instead of routing into a suspended context', async () => {

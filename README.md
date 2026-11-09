@@ -16,7 +16,8 @@
 
 ## Features
 
-- **Now playing.** Title, artist, album art, and the position of the track in the folder.
+- **Now playing.** Title, artist, album art, and the position of the track in the folder, in one box with a clock.
+- **Spectrum visualizer.** Animated level bars with falling peaks, in the popup, the mini player and under Icedrive's player. Click it to turn it off.
 - **Seek bar.** Scrub anywhere in the track from the popup.
 - **Queue.** Every audio file in the open folder, in Icedrive's sort order, under the folder's name. Click one to play it.
 - **Auto-advance.** The next track starts when the current one ends.
@@ -24,8 +25,8 @@
 - **Repeat.** Off, whole folder, or a single track. Shuffle and repeat settings are remembered.
 - **Equalizer.** 10 bands (32 Hz to 16 kHz), a preamp and 17 presets (bass boost, vocal, rock, podcast, laptop speakers and more), with a limiter so boosts don't distort. Shared by all Icedrive tabs and remembered.
 - **Volume.** Volume slider and mute in the popup and mini player, in sync with Icedrive's own volume slider.
-- **Everything inside Icedrive.** Under Icedrive's own player: shuffle, previous, next and repeat, the full equalizer, the folder's track list and a button for the mini player. You don't need to open the popup at all.
-- **Mini player.** Pop the player out into a small window that stays open while you work elsewhere.
+- **Everything inside Icedrive.** Under Icedrive's own player: shuffle, previous, next and repeat, the visualizer, the full equalizer and the folder's track list as tabs, and a button for the mini player. You don't need to open the popup at all.
+- **Mini player.** Pop the player out into a small window that stays open while you work elsewhere. Make it short and it becomes a compact bar.
 - **Media keys.** Play/pause, next and previous on your keyboard or headphones. Track info and artwork show up in the browser's media panel and in the Windows/macOS media overlay.
 - **Keyboard shortcuts** that work from any tab, and can be made global.
 
@@ -35,7 +36,7 @@
   <tr>
     <td align="center" width="50%">
       <img src="docs/images/popup.png" alt="Extension popup with album art, seek bar, controls and the folder queue" width="300"><br>
-      <sub><b>Popup</b>: now playing, seek bar, shuffle and repeat, queue</sub>
+      <sub><b>Popup</b>: now playing with the visualizer, seek bar, shuffle and repeat, queue</sub>
     </td>
     <td align="center" width="50%">
       <img src="docs/images/detached-window.png" alt="Mini player window showing a longer queue" width="300"><br>
@@ -44,14 +45,14 @@
   </tr>
   <tr>
     <td align="center" colspan="2">
-      <img src="docs/images/popup-equalizer.png" alt="Popup with the 10-band equalizer unfolded" width="300"><br>
+      <img src="docs/images/popup-equalizer.png" alt="Popup with the equalizer tab open" width="300"><br>
       <sub><b>Equalizer</b>: all 10 bands, preamp and presets, also in the popup and mini player</sub>
     </td>
   </tr>
   <tr>
     <td align="center" colspan="2">
-      <img src="docs/images/in-page-controls.png" alt="Shuffle, previous, next and repeat buttons and a 10-band equalizer added under Icedrive's player" width="640"><br>
-      <sub><b>Inside Icedrive</b>: controls, equalizer and track list under the built-in player</sub>
+      <img src="docs/images/in-page-controls.png" alt="Shuffle, previous, next and repeat buttons, a spectrum visualizer and a 10-band equalizer added under Icedrive's player" width="640"><br>
+      <sub><b>Inside Icedrive</b>: controls, visualizer, equalizer and track list under the built-in player</sub>
     </td>
   </tr>
 </table>
@@ -78,14 +79,16 @@ npm run build
 
 1. Open a folder with music on [icedrive.net](https://icedrive.net) and play any song.
 2. Use the controls that now appear under Icedrive's player, or click the extension icon for the popup.
-   The equalizer button (the bars icon) opens the equalizer, the list icon shows the folder's tracks.
+   The **Equalizer** and **Tracks** tabs open the equalizer and the folder's track list; click the open tab again to close it.
 3. Click **↗** in the corner of the popup to open the mini player window. Clicking it again focuses the window that's already open.
 
 ### Equalizer
 
-Turn it on with the switch, then pick a preset or drag the bands. Lower the **Pre** (preamp) slider when you boost a lot, so loud songs stay clean. The popup and mini player have the same equalizer: click the arrow next to *Reset* to unfold all bands.
+Turn it on with the switch, then pick a preset or drag the bands. Lower the **Pre** (preamp) slider when you boost a lot, so loud songs stay clean. The popup and mini player have the same equalizer in their **Equalizer** tab.
 
 Icedrive streams songs from its download servers. To run them through the equalizer, the extension asks the browser to load the song in CORS mode, which restarts it at the same spot once (a split second). If Icedrive's server ever refuses that for a file, the song just plays as before without the equalizer, and the panel says so.
+
+The spectrum visualizer uses the same processing, so it works on the same songs. While it's on, songs go through it even with the equalizer off (with a flat curve, so they sound the same). Click the visualizer to turn it off; with both off, songs play exactly as Icedrive sends them.
 
 ### Keyboard shortcuts
 

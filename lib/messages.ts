@@ -50,7 +50,9 @@ export type PlayerCommand =
   /** Loads a built-in preset's curve. */
   | { type: 'eqPreset'; preset: string }
   /** Album art as a data: URL (the page's blob: URL can't be shown in the popup). */
-  | { type: 'getArt' };
+  | { type: 'getArt' }
+  /** Loudness of `bars` frequency bands for the visualizer (number[] or null in reply). */
+  | { type: 'getSpectrum'; bars: number };
 
 export interface ArtResponse {
   /** The page URL this art came from, so the popup can tell when it changes. */
