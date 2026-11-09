@@ -126,7 +126,7 @@ async function shot({ out, width, height, scheme, detached, eqOpen = false, view
     { state: STATE, art: ART, origin: ORIGIN, eqOpen },
   );
   await page.goto(`${ORIGIN}/popup.html${detached ? '?detached=1' : ''}`);
-  await page.waitForSelector('#art.has-image');
+  await page.waitForSelector('.art.has-image');
   await page.evaluate(() => document.querySelector('.tracks').scrollTo(0, 0));
   await page.waitForTimeout(1200); // let the visualizer's bars rise
   const target = detached || viewportOnly ? page : page.locator('body');

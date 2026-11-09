@@ -35,3 +35,12 @@
 #preview .audio-wrap .plyr--audio .plyr__time {
   color: #8f97ad !important;
 }
+
+/*
+ * While the extension's player is in the preview, it replaces Icedrive's
+ * own cover, title and Plyr bar (the <audio> inside keeps playing; it is
+ * only hidden). If our player isn't there, Icedrive's shows as usual.
+ */
+#preview .audio-wrap:has(> #icedrive-music-ext-controls) > :not(#icedrive-music-ext-controls) {
+  display: none !important;
+}
