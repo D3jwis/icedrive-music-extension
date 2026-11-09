@@ -50,6 +50,7 @@ describe('equalizer messages', () => {
   it('accepts volume, mute, preset and equalizer changes', () => {
     expect(parseCommand({ type: 'setVolume', volume: 0.5 })).toEqual({ type: 'setVolume', volume: 0.5 });
     expect(parseCommand({ type: 'toggleMute' })).toEqual({ type: 'toggleMute' });
+    expect(parseCommand({ type: 'setSpeed', speed: 1.25 })).toEqual({ type: 'setSpeed', speed: 1.25 });
     expect(parseCommand({ type: 'eqPreset', preset: 'rock' })).toEqual({ type: 'eqPreset', preset: 'rock' });
     expect(parseCommand({ type: 'setEq', eq: { enabled: true } })).toEqual({ type: 'setEq', eq: { enabled: true } });
     expect(parseCommand({ type: 'setEq', eq: { gains: Array(10).fill(30), preamp: -2.2 } })).toEqual({
@@ -63,6 +64,9 @@ describe('equalizer messages', () => {
       { type: 'setVolume', volume: 2 },
       { type: 'setVolume', volume: -0.1 },
       { type: 'setVolume', volume: '1' },
+      { type: 'setSpeed', speed: 0 },
+      { type: 'setSpeed', speed: 16 },
+      { type: 'setSpeed', speed: '2' },
       { type: 'eqPreset', preset: 'toString' },
       { type: 'eqPreset', preset: 'custom' },
       { type: 'setEq', eq: {} },

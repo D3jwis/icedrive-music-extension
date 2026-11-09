@@ -23,6 +23,8 @@ export interface PlayerState {
   /** Volume of Icedrive's player, 0..1. */
   volume: number;
   muted: boolean;
+  /** Playback speed of Icedrive's player (1 = normal). */
+  speed: number;
   eq: EqSettings;
   eqStatus: EqStatus;
 }
@@ -41,6 +43,8 @@ export type PlayerCommand =
   /** 0..1 */
   | { type: 'setVolume'; volume: number }
   | { type: 'toggleMute' }
+  /** One of PLAYBACK_SPEEDS. */
+  | { type: 'setSpeed'; speed: number }
   /** Changes any of the equalizer settings; the rest stay as they are. */
   | { type: 'setEq'; eq: Partial<EqSettings> }
   /** Loads a built-in preset's curve. */

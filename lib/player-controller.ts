@@ -65,6 +65,7 @@ export class PlayerController {
       hasNext: active && this.queue.hasNext(currentId, this.settings),
       volume: audio?.volume ?? 1,
       muted: audio?.muted ?? false,
+      speed: audio?.playbackRate ?? 1,
       eq: this.engine?.getSettings() ?? { ...DEFAULT_EQ, gains: [...DEFAULT_EQ.gains] },
       eqStatus: this.engine?.getStatus() ?? 'off',
     };
@@ -140,6 +141,16 @@ export class PlayerController {
     if (audio) audio.muted = !audio.muted;
   }
 
+  /**
+   * Sets the playback speed of Icedrive's player. Its own speed menu
+   * follows, and it remembers the speed for the next songs like when you
+   * pick it there.
+   */
+  setSpeed(speed: number): void {
+    const audio = findAudio(this.doc);
+    if (audio && Number.isFinite(speed) && speed > 0) audio.playbackRate = speed;
+  }
+
   /** Changes some equalizer settings. Moving the curve by hand makes the preset "custom". */
   updateEq(patch: Partial<EqSettings>): void {
     if (!this.engine) return;
@@ -186,6 +197,9 @@ export class PlayerController {
         break;
       case 'toggleMute':
         this.toggleMute();
+        break;
+      case 'setSpeed':
+        this.setSpeed(cmd.speed);
         break;
       case 'setEq':
         this.updateEq(cmd.eq);

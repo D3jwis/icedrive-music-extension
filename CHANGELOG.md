@@ -14,6 +14,7 @@ changes under **Unreleased** as you go and rename it when you tag.
 ### Added
 
 - **Full equalizer in the popup and mini player**: all 10 bands and the preamp, folded away by default (the arrow next to *Reset* unfolds it; remembered).
+- **Playback speed** in the popup and mini player (0.5× – 4×, next to the volume), the same speeds as Icedrive's own player. Icedrive remembers it for the next songs.
 
 ### Changed
 
@@ -21,6 +22,7 @@ changes under **Unreleased** as you go and rename it when you tag.
 - Equalizer sliders fill from 0 dB, so boosts and cuts are visible at a glance.
 - *Reset* only shows when the equalizer curve isn't flat (and, in the popup, when the bands are unfolded).
 - Track numbers line up with the folder icon above the list.
+- The play/pause button's icon is white, like the slider knobs.
 
 ## [0.3.0] - 2026-11-09
 

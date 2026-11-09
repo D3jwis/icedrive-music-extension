@@ -6,6 +6,7 @@ import { openMiniPlayer } from '@/lib/mini-player';
 import { el, icon, setRangeFill } from '@/lib/ui/dom';
 import { buildEqPanel, renderEqPanel, wireEqPanel } from '@/lib/ui/eq-panel';
 import { buildTrackList, createTrackListRenderer } from '@/lib/ui/track-list';
+import { formatSpeed, PLAYBACK_SPEEDS } from '@/lib/speed';
 import { parseArtResponse } from '@/lib/validate';
 
 const POLL_MS = 500;
@@ -17,6 +18,8 @@ const CHEVRON = 'M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z';
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 const seek = $<HTMLInputElement>('seek');
 const volume = $<HTMLInputElement>('volume');
+const speed = $<HTMLSelectElement>('speed');
+speed.append(...PLAYBACK_SPEEDS.map((s) => el(document, 'option', { value: String(s) }, formatSpeed(s))));
 
 async function findIcedriveTab(): Promise<number | undefined> {
   const [active] = await browser.tabs.query({ active: true, currentWindow: true, url: ICEDRIVE_URL });
@@ -123,6 +126,17 @@ function renderVolume(level: number, muted: boolean) {
   $('mute').title = label;
 }
 
+function renderSpeed(rate: number) {
+  if (document.activeElement === speed) return; // the list may be open
+  const value = String(rate);
+  // A speed set elsewhere that isn't in our list still shows as it is.
+  const other = speed.querySelector<HTMLOptionElement>('[data-other]');
+  if (other?.value !== value) other?.remove();
+  if (![...speed.options].some((o) => o.value === value))
+    speed.append(el(document, 'option', { value, 'data-other': '' }, formatSpeed(rate)));
+  speed.value = value;
+}
+
 const REPEAT_LABELS = { off: 'off', all: 'whole folder', one: 'one track' } as const;
 
 function renderModes({ settings }: PlayerState) {
@@ -170,6 +184,7 @@ function render(state: PlayerState | null) {
   renderArt(nowPlaying.artUrl);
   renderSeek(state.currentTime, state.duration);
   renderVolume(state.volume, state.muted);
+  renderSpeed(state.speed);
 
   // <svg> has no .hidden property, so toggle the attribute directly.
   $('icon-play').toggleAttribute('hidden', !state.paused);
@@ -221,6 +236,7 @@ volume.addEventListener('change', () => {
   void run({ type: 'setVolume', volume: Number(volume.value) });
 });
 $('mute').addEventListener('click', () => run({ type: 'toggleMute' }));
+speed.addEventListener('change', () => void run({ type: 'setSpeed', speed: Number(speed.value) }));
 
 wireEqPanel(
   eqPanel,
