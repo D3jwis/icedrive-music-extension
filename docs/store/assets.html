@@ -42,10 +42,11 @@
 </head>
 <body>
 <script>
-  // ?v=popup | mini | inpage | privacy | tile | marquee. Content is fixed text, built with DOM APIs.
+  // ?v=popup | mini | inpage | eq | privacy | tile | marquee. Content is fixed text, built with DOM APIs.
   const shots = {
     popup: { img: '../images/popup.png', w: 380, title: ['Now playing, ', 'in one click'], text: 'Album art, seek bar, volume, equalizer presets, shuffle, repeat and the whole folder as a queue, right under the toolbar icon.' },
-    mini: { img: '../images/detached-window.png', w: 400, title: ['A mini player that ', 'stays open'], text: 'Pop the player out into its own window, with the full equalizer, and keep control while you work in other tabs.' },
+    mini: { img: '../images/detached-window.png', w: 400, title: ['A mini player that ', 'stays open'], text: 'Pop the player out into its own window and keep control while you work in other tabs.' },
+    eq: { img: '../images/popup-equalizer.png', w: 380, title: ['Your sound, ', 'your way'], text: 'A 10-band equalizer with preamp and 17 presets, right in the popup and the mini player. Bass boost, vocal, podcast, laptop speakers and more.' },
     inpage: { img: '../images/in-page-controls.png', w: 700, title: ['A 10-band equalizer ', 'inside Icedrive'], text: 'Equalizer with 17 presets, track list, shuffle and repeat right under Icedrive’s player, restyled to match.' },
   };
   const v = new URLSearchParams(location.search).get('v') || 'popup';
@@ -56,7 +57,7 @@
     const copy = el('div', 'copy');
     const h = el('h1'); h.append('Icedrive Music ', el('span', '', 'Player+'));
     const chips = el('div', 'chips');
-    for (const c of ['Queue', 'Shuffle', 'Repeat', 'Media keys', 'Mini player']) chips.append(el('span', 'chip', c));
+    for (const c of ['Equalizer', 'Volume', 'Queue', 'Shuffle', 'Mini player']) chips.append(el('span', 'chip', c));
     copy.append(icon(), h, el('p', '', 'Turn Icedrive\u2019s audio preview into a proper music player.'), chips);
     const frame = el('div', 'frame'); const img = el('img'); img.src = '../images/popup.png'; img.style.width = '300px'; frame.append(img);
     m.append(copy, frame);
@@ -69,7 +70,7 @@
     copy.append(brand, h, el('p', '', 'Safe for a work laptop: it only runs on icedrive.net and nothing ever leaves your browser.'));
     const cards = el('div', 'cards');
     for (const [t, d] of [
-      ['1 permission', 'Only storage, to remember shuffle and repeat.'],
+      ['1 permission', 'Only storage, to remember shuffle, repeat and the equalizer.'],
       ['1 website', 'Runs on icedrive.net and nowhere else.'],
       ['0 data sent', 'No analytics, no tracking, no network requests.'],
       ['0 remote code', 'Everything ships in the package, strict CSP.'],
@@ -79,7 +80,7 @@
   } else if (v === 'tile') {
     const t = el('div', 'tile');
     const h = el('h1'); h.append('Icedrive Music ', el('span', '', 'Player+'));
-    t.append(icon(), h, el('p', '', 'Shuffle, repeat, queue, media keys and a mini player for Icedrive.'));
+    t.append(icon(), h, el('p', '', 'Equalizer, volume, shuffle, repeat, queue and a mini player for Icedrive.'));
     document.body.append(t);
   } else {
     const s = shots[v];

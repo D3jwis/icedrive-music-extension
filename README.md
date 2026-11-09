@@ -44,6 +44,12 @@
   </tr>
   <tr>
     <td align="center" colspan="2">
+      <img src="docs/images/popup-equalizer.png" alt="Popup with the 10-band equalizer unfolded" width="300"><br>
+      <sub><b>Equalizer</b>: all 10 bands, preamp and presets, also in the popup and mini player</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2">
       <img src="docs/images/in-page-controls.png" alt="Shuffle, previous, next and repeat buttons and a 10-band equalizer added under Icedrive's player" width="640"><br>
       <sub><b>Inside Icedrive</b>: controls, equalizer and track list under the built-in player</sub>
     </td>

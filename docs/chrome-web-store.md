@@ -103,7 +103,7 @@ This is an unofficial, community-made extension. It isn't affiliated with or end
 **Images** (in `docs/store/`, re-render with `node docs/store/render.mjs`):
 
 - Store icon: `public/icon/128.png`
-- Screenshots (1280×800): `screenshot-1-popup.png`, `screenshot-2-mini-player.png`, `screenshot-3-in-icedrive.png`, `screenshot-4-privacy.png`
+- Screenshots (1280×800): `screenshot-1-popup.png`, `screenshot-2-mini-player.png`, `screenshot-3-in-icedrive.png`, `screenshot-4-privacy.png`, `screenshot-5-equalizer.png`
 - Small promo tile (440×280): `promo-small-440x280.png`
 - Marquee promo tile (1400×560): `promo-marquee-1400x560.png`
 

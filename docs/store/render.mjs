@@ -1,5 +1,5 @@
 // Renders the Chrome Web Store images from docs/store/assets.html:
-// four 1280x800 screenshots, the 440x280 small promo tile and the 1400x560
+// five 1280x800 screenshots, the 440x280 small promo tile and the 1400x560
 // marquee. All are 24-bit PNGs without alpha, as the store requires.
 // Needs Playwright with Chromium: `npx playwright install chromium` if it isn't installed.
 import { createRequire } from 'node:module';
@@ -13,6 +13,7 @@ const jobs = [
   ['mini', 1280, 800, 'screenshot-2-mini-player.png'],
   ['inpage', 1280, 800, 'screenshot-3-in-icedrive.png'],
   ['privacy', 1280, 800, 'screenshot-4-privacy.png'],
+  ['eq', 1280, 800, 'screenshot-5-equalizer.png'],
   ['tile', 440, 280, 'promo-small-440x280.png'],
   ['marquee', 1400, 560, 'promo-marquee-1400x560.png'],
 ];
