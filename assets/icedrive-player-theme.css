@@ -3,6 +3,10 @@
  * preview card and the extension's controls: navy bar, light icons and a
  * teal progress bar. Icedrive sets a couple of these inline on the player,
  * so !important is needed to win over them. Only touches the audio preview.
+ *
+ * The player box itself stays transparent: it is positioned and spans the
+ * whole card, so a background on it would paint over the middle of the album
+ * art floated next to it. Only the controls (beside the art) get one.
  */
 #preview .audio-wrap .plyr--audio {
   --plyr-color-main: #17a1a2 !important;
@@ -22,7 +26,6 @@
   --plyr-menu-arrow-color: #8f97ad !important;
   --plyr-menu-back-border-color: #313953 !important;
   --plyr-menu-back-border-shadow-color: transparent !important;
-  background: #202639 !important;
   color: #c9cfdd !important;
 }
 #preview .audio-wrap .plyr--audio .plyr__controls {
