@@ -7,6 +7,7 @@ import {
   EQ_PRESETS,
   formatDb,
   formatFrequency,
+  isFlat,
   type EqSettings,
 } from '../equalizer';
 import { el, setRangeFill } from './dom';
@@ -95,6 +96,8 @@ export function renderEqPanel(
   q<HTMLInputElement>('[data-eq="on"]').checked = eq.enabled;
   q<HTMLSelectElement>('[data-eq="preset"]').value = eq.preset;
   q('[data-eq="bands"]').classList.toggle('off', !eq.enabled);
+  // Reset only when there is something to reset.
+  q<HTMLElement>('[data-eq="reset"]').hidden = isFlat(eq);
   const statusEl = q<HTMLElement>('[data-eq="status"]');
   statusEl.textContent = EQ_STATUS_TEXT[status];
   statusEl.dataset.status = status;

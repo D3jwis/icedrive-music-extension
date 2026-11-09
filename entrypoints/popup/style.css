@@ -174,7 +174,8 @@ body {
 .eq-panel .eq-status[data-status='active'] {
   display: none;
 }
-.eq-panel.folded .bands {
+.eq-panel.folded .bands,
+.eq-panel.folded [data-eq='reset'] {
   display: none;
 }
 .fold-btn {
@@ -193,7 +194,6 @@ body {
 
 .tracks {
   max-height: 184px;
-  padding-right: 2px;
 }
 
 /* Banner at the top: the extension's icon and name on its blue tile colours. */

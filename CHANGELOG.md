@@ -17,6 +17,8 @@ changes under **Unreleased** as you go and rename it when you tag.
 
 - **One look everywhere**: the popup, the mini player and the controls inside Icedrive share one stylesheet, with Icedrive's rounded dark panels, its navy/teal colours and white slider knobs like Icedrive's player. The popup no longer switches to a light theme.
 - Equalizer sliders fill from 0 dB, so boosts and cuts are visible at a glance.
+- *Reset* only shows when the equalizer curve isn't flat (and, in the popup, when the bands are unfolded).
+- Track numbers line up with the folder icon above the list.
 
 ## [0.3.0] - 2026-11-09
 
